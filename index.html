@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dobrá Partia | Váš domov v pohode</title>
+    <meta name="description" content="Dobrá Partia - kompletný servis pre váš domov a záhradu v Košickom kraji. Záhradné práce, bazénový servis, hodinový majster a viac.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        :root {
+            --navy: #1e3a5f;
+            --teal: #5bb7b4;
+            --terracotta: #c47152;
+            --sand: #f9f7f2;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--sand); scroll-behavior: smooth; }
+        .bg-navy { background-color: var(--navy); }
+        .text-navy { color: var(--navy); }
+        .text-teal { color: var(--teal); }
+        .bg-teal { background-color: var(--teal); }
+        .bg-terracotta { background-color: var(--terracotta); }
+        .border-teal { border-color: var(--teal); }
+        .hero-gradient { background: linear-gradient(135deg, #1e3a5f 0%, #2a4d7d 100%); }
+        .card-shadow { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); }
+        .service-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        #address-results { max-height: 200px; overflow-y: auto; z-index: 100; }
+        .result-item:hover { background-color: #f3f4f6; cursor: pointer; }
+        #map { height: 220px; border-radius: 12px; z-index: 1; }
+        .mobile-menu { transform: translateX(100%); transition: transform 0.3s ease-in-out; }
+        .mobile-menu.open { transform: translateX(0); }
+        .form-success { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <!-- Navigácia -->
+    <nav class="bg-white sticky top-0 z-50 border-b border-gray-100 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex-shrink-0 flex items-center gap-3">
+                        <img src="assets/logo.png" alt="Logo Dobrá Partia" class="w-12 h-12 rounded-lg object-contain">
+                        <span class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-900 to-teal-600">DOBRÁ PARTIA</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#sluzby" class="text-gray-600 hover:text-teal font-medium transition">Služby</a>
+                    <a href="#ako-pracujeme" class="text-gray-600 hover:text-teal font-medium transition">Ako pracujeme</a>
+                    <a href="o-nas.html" class="text-gray-600 hover:text-teal font-medium transition">O nás</a>
+                    <a href="#kontakt" class="bg-terracotta text-white px-6 py-2 rounded-full font-bold hover:opacity-90 transition shadow-md">Rezervovať termín</a>
+                </div>
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-gray-600 text-2xl"><i class="fas fa-bars"></i></button>
+                </div>
+            </div>
+        </div>
+        <div id="mobile-menu" class="mobile-menu fixed top-0 right-0 w-64 h-full bg-white shadow-2xl z-50 p-6">
+            <button id="mobile-menu-close" class="text-gray-600 text-2xl mb-8 block ml-auto"><i class="fas fa-times"></i></button>
+            <div class="flex flex-col space-y-6">
+                <a href="#sluzby" class="text-gray-700 font-medium text-lg">Služby</a>
+                <a href="#ako-pracujeme" class="text-gray-700 font-medium text-lg">Ako pracujeme</a>
+                <a href="o-nas.html" class="text-gray-700 font-medium text-lg">O nás</a>
+                <a href="#kontakt" class="bg-terracotta text-white px-6 py-3 rounded-full font-bold text-center">Rezervovať termín</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero-gradient text-white py-16 md:py-24 px-4 overflow-hidden">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12">
+            <div class="md:w-1/2 space-y-6 z-10">
+                <div class="inline-block bg-teal/20 text-teal-300 px-4 py-1 rounded-full text-sm font-bold tracking-wider uppercase">Špecialisti pre Košický kraj</div>
+                <h1 class="text-4xl md:text-6xl font-extrabold leading-tight">
+                    Váš domov aj záhrada <br><span class="text-teal">v absolútnej pohode.</span>
+                </h1>
+                <p class="text-lg text-blue-100 max-w-lg">Sme partia šikovných chlapov z Východu. Rozumieme strojom, lopatám aj technológiám. Pôsobíme v celom Košickom kraji.</p>
+                <div class="flex flex-wrap gap-4 pt-4">
+                    <a href="#kontakt" class="bg-teal text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg hover:scale-105 transition transform">Chcem cenovú ponuku</a>
+                </div>
+            </div>
+            <div class="md:w-1/2 relative">
+                <div class="relative z-10">
+                    <img src="assets/auto.jpg" alt="Dacia Dokker Dobrá Partia" class="rounded-3xl shadow-2xl border-4 border-white/10">
+                </div>
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-teal/20 rounded-full blur-3xl"></div>
+                <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-terracotta/20 rounded-full blur-3xl"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Služby -->
+    <section id="sluzby" class="py-24 max-w-7xl mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-navy mb-4">Kompletný servis pre váš domov</h2>
+            <p class="text-gray-500 max-w-2xl mx-auto text-lg">Od Košíc po Sobrance, od Rožňavy po Trebišov. Prídeme všade tam, kde nás potrebujete.</p>
+            <div class="w-24 h-1 bg-teal mx-auto mt-6"></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="service-card bg-white p-8 rounded-3xl card-shadow border-b-4 border-teal transition-all duration-300">
+                <div class="w-16 h-16 bg-teal/10 rounded-2xl flex items-center justify-center text-teal text-3xl mb-6"><i class="fas fa-leaf"></i></div>
+                <h3 class="text-xl font-bold text-navy mb-3">Záhradné práce</h3>
+                <p class="text-gray-600 mb-4">Kosenie, vertikutácia, strihanie živých plotov a zakladanie trávnikov.</p>
+            </div>
+            <div class="service-card bg-white p-8 rounded-3xl card-shadow border-b-4 border-blue-400 transition-all duration-300">
+                <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-500 text-3xl mb-6"><i class="fas fa-swimmer"></i></div>
+                <h3 class="text-xl font-bold text-navy mb-3">Bazénový servis</h3>
+                <p class="text-gray-600 mb-4">Kompletná príprava na sezónu, zazimovanie a pravidelná údržba vody.</p>
+            </div>
+            <div class="service-card bg-white p-8 rounded-3xl card-shadow border-b-4 border-slate-300 transition-all duration-300">
+                <div class="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-400 text-3xl mb-6"><i class="fas fa-snowflake"></i></div>
+                <h3 class="text-xl font-bold text-navy mb-3">Zimná pohotovosť</h3>
+                <p class="text-gray-600 mb-4">Odpratávanie snehu z chodníkov a príjazdových ciest, keď Košice zafúka.</p>
+            </div>
+            <div class="service-card bg-white p-8 rounded-3xl card-shadow border-b-4 border-terracotta transition-all duration-300">
+                <div class="w-16 h-16 bg-terracotta/10 rounded-2xl flex items-center justify-center text-terracotta text-3xl mb-6"><i class="fas fa-hammer"></i></div>
+                <h3 class="text-xl font-bold text-navy mb-3">Hodinový majster</h3>
+                <p class="text-gray-600 mb-4">Drobné opravy, vŕtanie, montáž nábytku a inštalácia spotrebičov.</p>
+            </div>
+            <div class="service-card bg-white p-8 rounded-3xl card-shadow border-b-4 border-amber-600 transition-all duration-300">
+                <div class="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center text-amber-600 text-3xl mb-6"><i class="fas fa-couch"></i></div>
+                <h3 class="text-xl font-bold text-navy mb-3">Vypratávanie a odvoz</h3>
+                <p class="text-gray-600 mb-4">Odvoz starého nábytku na zberný dvor, vypratávanie garáží a pivníc.</p>
+            </div>
+            <div class="service-card bg-white p-8 rounded-3xl card-shadow border-b-4 border-navy transition-all duration-300">
+                <div class="w-16 h-16 bg-navy/10 rounded-2xl flex items-center justify-center text-navy text-3xl mb-6"><i class="fas fa-broom"></i></div>
+                <h3 class="text-xl font-bold text-navy mb-3">Tlakové čistenie</h3>
+                <p class="text-gray-600 mb-4">Čistenie dlažieb, fasád a striech. Vrátime vášmu domu pôvodný lesk.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ako pracujeme -->
+    <section id="ako-pracujeme" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-navy mb-4">Ako to u nás funguje?</h2>
+                <p class="text-gray-500 max-w-2xl mx-auto text-lg">Jednoduchý proces od dopytu po hotovú prácu.</p>
+                <div class="w-24 h-1 bg-teal mx-auto mt-6"></div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-teal/10 rounded-full flex items-center justify-center text-teal text-3xl mx-auto mb-4"><i class="fas fa-paper-plane"></i></div>
+                    <div class="text-sm font-bold text-teal uppercase mb-2">Krok 1</div>
+                    <h3 class="font-bold text-navy mb-2">Pošlite dopyt</h3>
+                    <p class="text-gray-500 text-sm">Vyplňte formulár alebo nám zavolajte. Stačí pár viet o tom, čo potrebujete.</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-teal/10 rounded-full flex items-center justify-center text-teal text-3xl mx-auto mb-4"><i class="fas fa-phone-alt"></i></div>
+                    <div class="text-sm font-bold text-teal uppercase mb-2">Krok 2</div>
+                    <h3 class="font-bold text-navy mb-2">Ozveme sa do 60 min</h3>
+                    <p class="text-gray-500 text-sm">Upresníme si detaily a dohodneme termín obhliadky alebo rovno práce.</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-teal/10 rounded-full flex items-center justify-center text-teal text-3xl mx-auto mb-4"><i class="fas fa-tools"></i></div>
+                    <div class="text-sm font-bold text-teal uppercase mb-2">Krok 3</div>
+                    <h3 class="font-bold text-navy mb-2">Spravíme to</h3>
+                    <p class="text-gray-500 text-sm">Príde naša partia, spraví prácu rýchlo a poriadne. Bez neporiadku.</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-teal/10 rounded-full flex items-center justify-center text-teal text-3xl mx-auto mb-4"><i class="fas fa-smile"></i></div>
+                    <div class="text-sm font-bold text-teal uppercase mb-2">Krok 4</div>
+                    <h3 class="font-bold text-navy mb-2">Spokojnosť</h3>
+                    <p class="text-gray-500 text-sm">Platíte až keď ste spokojní. A my vieme, že budete.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Kontaktný formulár s mapou -->
+    <section id="kontakt" class="py-24 max-w-5xl mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-navy mb-4">Nezáväzná cenová ponuka</h2>
+            <p class="text-gray-500 max-w-2xl mx-auto text-lg">Vyplňte formulár a ozveme sa vám do 60 minút.</p>
+            <div class="w-24 h-1 bg-teal mx-auto mt-6"></div>
+        </div>
+        <div class="bg-white rounded-3xl card-shadow overflow-hidden">
+            <div class="flex flex-col md:flex-row">
+                <div class="bg-teal p-10 md:p-12 text-white md:w-2/5">
+                    <h3 class="text-2xl font-bold mb-6 text-white">Kontaktujte nás</h3>
+                    <p class="text-blue-50 mb-8">Vyplňte formulár a naša „Dobrá Partia" sa vám ozve do 60 minút.</p>
+                    <div class="space-y-5">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center flex-shrink-0"><i class="fas fa-map-marker-alt"></i></div>
+                            <p class="font-medium text-sm">Košický kraj<br>(KE, KS, MI, TV, SN, RV, GL, SO)</p>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center flex-shrink-0"><i class="fas fa-clock"></i></div>
+                            <p class="font-medium text-sm">Po - So: 7:00 - 19:00</p>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center flex-shrink-0"><i class="fas fa-phone"></i></div>
+                            <p class="font-medium text-sm">+421 XXX XXX XXX</p>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center flex-shrink-0"><i class="fas fa-envelope"></i></div>
+                            <p class="font-medium text-sm">info@dobrapartia.sk</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-8 md:p-12 md:w-3/5">
+                    <form class="space-y-5" id="quote-form">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-gray-400 mb-2">Meno *</label>
+                                <input type="text" name="meno" required placeholder="Jozef Kováč" class="w-full p-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-teal outline-none transition shadow-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-gray-400 mb-2">Telefón *</label>
+                                <input type="tel" name="telefon" required placeholder="+421 9XX XXX XXX" class="w-full p-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-teal outline-none transition shadow-sm">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-gray-400 mb-2">E-mail</label>
+                            <input type="email" name="email" placeholder="vas@email.sk" class="w-full p-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-teal outline-none transition shadow-sm">
+                        </div>
+                        <div class="relative">
+                            <label class="block text-xs font-bold uppercase text-gray-400 mb-2">Adresa realizácie *</label>
+                            <div class="relative">
+                                <input type="text" id="address-input" name="adresa" required autocomplete="off" placeholder="Začnite písať ulicu a mesto..." class="w-full p-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-teal outline-none transition shadow-sm">
+                                <div class="absolute right-4 top-4 text-gray-300"><i class="fas fa-search"></i></div>
+                            </div>
+                            <div id="address-results" class="absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-xl hidden"></div>
+                            <input type="hidden" id="address-lat" name="lat">
+                            <input type="hidden" id="address-lon" name="lon">
+                        </div>
+                        <div id="map-container" class="hidden">
+                            <div id="map"></div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-gray-400 mb-2">O čo máte záujem? *</label>
+                            <select name="sluzba" required class="w-full p-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-teal outline-none transition shadow-sm">
+                                <option value="">-- Vyberte službu --</option>
+                                <option value="zahradne-prace">Záhradné práce</option>
+                                <option value="bazenovy-servis">Bazénový servis</option>
+                                <option value="zimna-udrzba">Zimná údržba</option>
+                                <option value="hodinovy-majster">Hodinový majster</option>
+                                <option value="vypratavanie">Vypratávanie a odvoz</option>
+                                <option value="tlakove-cistenie">Tlakové čistenie</option>
+                                <option value="ine">Iné</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-gray-400 mb-2">Popis práce</label>
+                            <textarea name="popis" rows="3" placeholder="Popíšte čo potrebujete spraviť..." class="w-full p-4 rounded-xl bg-gray-50 border border-gray-200 focus:border-teal outline-none transition shadow-sm resize-none"></textarea>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <input type="checkbox" id="gdpr" name="gdpr" required class="mt-1 w-4 h-4 accent-teal-500">
+                            <label for="gdpr" class="text-xs text-gray-500">Súhlasím so <a href="ochrana-sukromia.html" class="underline hover:text-teal">spracovaním osobných údajov</a> za účelom spracovania dopytu. *</label>
+                        </div>
+                        <button type="submit" id="submit-btn" class="w-full bg-navy text-white py-5 rounded-xl font-bold text-lg hover:bg-teal hover:shadow-xl transition-all duration-300">Odoslať nezáväzný dopyt</button>
+                    </form>
+                    <div id="form-success" class="hidden form-success text-center py-12">
+                        <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center text-green-500 text-4xl mx-auto mb-6"><i class="fas fa-check"></i></div>
+                        <h3 class="text-2xl font-bold text-navy mb-3">Dopyt odoslaný!</h3>
+                        <p class="text-gray-500">Ďakujeme. Ozveme sa vám do 60 minút.</p>
+                    </div>
+                    <div id="form-error" class="hidden form-success text-center py-6">
+                        <div class="bg-red-50 text-red-600 p-4 rounded-xl text-sm">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>Nastala chyba pri odosielaní. Skúste to znova alebo nám zavolajte.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 py-16 text-white">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+                <div class="md:col-span-1">
+                    <div class="flex items-center gap-3 mb-4">
+                        <img src="assets/logo.png" alt="Logo" class="w-10 h-10 rounded-lg">
+                        <span class="text-xl font-bold tracking-tight uppercase">Dobrá Partia</span>
+                    </div>
+                    <p class="text-gray-400 text-sm leading-relaxed">Kompletný servis pre váš domov a záhradu v Košickom kraji.</p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-sm uppercase tracking-wider mb-4 text-teal">Služby</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="#sluzby" class="hover:text-white transition">Záhradné práce</a></li>
+                        <li><a href="#sluzby" class="hover:text-white transition">Bazénový servis</a></li>
+                        <li><a href="#sluzby" class="hover:text-white transition">Zimná pohotovosť</a></li>
+                        <li><a href="#sluzby" class="hover:text-white transition">Hodinový majster</a></li>
+                        <li><a href="#sluzby" class="hover:text-white transition">Tlakové čistenie</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-sm uppercase tracking-wider mb-4 text-teal">Informácie</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="o-nas.html" class="hover:text-white transition">O nás</a></li>
+                        <li><a href="ochrana-sukromia.html" class="hover:text-white transition">Ochrana súkromia</a></li>
+                        <li><a href="obchodne-podmienky.html" class="hover:text-white transition">Obchodné podmienky</a></li>
+                        <li><a href="#kontakt" class="hover:text-white transition">Kontakt</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-sm uppercase tracking-wider mb-4 text-teal">Kontakt</h4>
+                    <ul class="space-y-3 text-gray-400 text-sm">
+                        <li class="flex items-center gap-2"><i class="fas fa-phone text-teal text-xs"></i> +421 XXX XXX XXX</li>
+                        <li class="flex items-center gap-2"><i class="fas fa-envelope text-teal text-xs"></i> info@dobrapartia.sk</li>
+                        <li class="flex items-center gap-2"><i class="fas fa-map-marker-alt text-teal text-xs"></i> Košický kraj</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-gray-500 text-sm">&copy; 2026 Dobrá Partia s.r.o. | IČO: XXXXXXXX</p>
+                <div class="flex gap-4 text-gray-500">
+                    <a href="ochrana-sukromia.html" class="text-sm hover:text-white transition">Ochrana súkromia</a>
+                    <span>|</span>
+                    <a href="obchodne-podmienky.html" class="text-sm hover:text-white transition">Obchodné podmienky</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuClose = document.getElementById('mobile-menu-close');
+        mobileMenuBtn.addEventListener('click', function() { mobileMenu.classList.add('open'); });
+        mobileMenuClose.addEventListener('click', function() { mobileMenu.classList.remove('open'); });
+        mobileMenu.querySelectorAll('a').forEach(function(link) {
+            link.addEventListener('click', function() { mobileMenu.classList.remove('open'); });
+        });
+
+        // Address autocomplete (OSM Nominatim)
+        var addressInput = document.getElementById('address-input');
+        var resultsBox = document.getElementById('address-results');
+        var latInput = document.getElementById('address-lat');
+        var lonInput = document.getElementById('address-lon');
+        var mapContainer = document.getElementById('map-container');
+        var map = null;
+        var marker = null;
+        var searchTimeout = null;
+
+        addressInput.addEventListener('input', function() {
+            var query = this.value;
+            clearTimeout(searchTimeout);
+            if (query.length < 3) {
+                resultsBox.classList.add('hidden');
+                return;
+            }
+            searchTimeout = setTimeout(function() {
+                var url = 'https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(query) + '&addressdetails=1&limit=5&countrycodes=sk&viewbox=19.9,49.2,22.6,48.3&bounded=0';
+                fetch(url, { headers: { 'Accept-Language': 'sk' } })
+                    .then(function(r) { return r.json(); })
+                    .then(function(data) {
+                        // Clear previous results safely
+                        while (resultsBox.firstChild) {
+                            resultsBox.removeChild(resultsBox.firstChild);
+                        }
+                        if (data.length > 0) {
+                            resultsBox.classList.remove('hidden');
+                            data.forEach(function(item) {
+                                var div = document.createElement('div');
+                                div.className = 'result-item p-3 border-b border-gray-100 last:border-0 text-sm text-gray-700';
+                                div.textContent = item.display_name;
+                                div.addEventListener('click', function() {
+                                    addressInput.value = item.display_name;
+                                    latInput.value = item.lat;
+                                    lonInput.value = item.lon;
+                                    resultsBox.classList.add('hidden');
+                                    showMap(parseFloat(item.lat), parseFloat(item.lon));
+                                });
+                                resultsBox.appendChild(div);
+                            });
+                        } else {
+                            resultsBox.classList.add('hidden');
+                        }
+                    })
+                    .catch(function(err) { console.error('Chyba pri hľadaní adresy:', err); });
+            }, 400);
+        });
+
+        document.addEventListener('click', function(e) {
+            if (e.target !== addressInput) { resultsBox.classList.add('hidden'); }
+        });
+
+        // Leaflet map
+        function showMap(lat, lon) {
+            mapContainer.classList.remove('hidden');
+            if (!map) {
+                map = L.map('map').setView([lat, lon], 15);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap'
+                }).addTo(map);
+            } else {
+                map.setView([lat, lon], 15);
+            }
+            if (marker) {
+                marker.setLatLng([lat, lon]);
+            } else {
+                marker = L.marker([lat, lon]).addTo(map);
+            }
+            setTimeout(function() { map.invalidateSize(); }, 200);
+        }
+
+        // Form submission to n8n webhook
+        // NASTAVTE SVOJU N8N WEBHOOK URL:
+        var N8N_WEBHOOK_URL = 'https://YOUR-N8N-INSTANCE.app.n8n.cloud/webhook/dobra-partia-dopyt';
+
+        var form = document.getElementById('quote-form');
+        var submitBtn = document.getElementById('submit-btn');
+        var formSuccess = document.getElementById('form-success');
+        var formError = document.getElementById('form-error');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            formError.classList.add('hidden');
+
+            var formData = new FormData(form);
+            var data = {
+                meno: formData.get('meno'),
+                telefon: formData.get('telefon'),
+                email: formData.get('email') || '',
+                adresa: formData.get('adresa'),
+                lat: formData.get('lat') || '',
+                lon: formData.get('lon') || '',
+                sluzba: formData.get('sluzba'),
+                popis: formData.get('popis') || '',
+                odoslane: new Date().toISOString(),
+                zdroj: 'web-formular'
+            };
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Odosielam...';
+
+            fetch(N8N_WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(function(response) {
+                if (response.ok) {
+                    form.classList.add('hidden');
+                    formSuccess.classList.remove('hidden');
+                } else {
+                    throw new Error('Server error');
+                }
+            })
+            .catch(function(err) {
+                console.error('Chyba pri odosielaní:', err);
+                formError.classList.remove('hidden');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Odoslať nezáväzný dopyt';
+            });
+        });
+    </script>
+
+</body>
+</html>
