@@ -39,6 +39,14 @@
       "location": "Rožňava",
       "service": "tlakove-cistenie",
       "rating": 4
+    },
+    {
+      "id": 6,
+      "text": "Skleník nám kompletne zrekonštruovali - nová dlažba, závlaha, výsadba. Paradajky rastú ako divé!",
+      "author": "Milan D.",
+      "location": "Košice",
+      "service": "zahradne-prace",
+      "rating": 5
     }
   ],
   "projects": [
@@ -50,14 +58,114 @@
       "date": "2026-03",
       "tags": ["hodinovy-majster", "exterier"],
       "photos": [
-        {
-          "src": "assets/references/plot-stavba-01.jpg",
-          "alt": "Stavba dreveného plotu - montáž lamiel"
-        },
-        {
-          "src": "assets/references/plot-stlpiky-02.jpg",
-          "alt": "Osádzanie stĺpikov plotu"
-        }
+        { "src": "assets/references/plot-stavba-01.jpg", "alt": "Stavba dreveného plotu - montáž lamiel" },
+        { "src": "assets/references/plot-stlpiky-02.jpg", "alt": "Osádzanie stĺpikov plotu" }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Čistenie a servis bazéna",
+      "description": "Kompletný bazénový servis - vypustenie zelenej vody, tlakové čistenie stien a dna bazéna, kontrola filtrácie a napustenie čistej vody s chemickou úpravou. Bazén pripravený na sezónu.",
+      "location": "Košice-okolie",
+      "date": "2025-09",
+      "tags": ["bazenovy-servis", "exterier"],
+      "photos": [
+        { "src": "assets/references/bazen-pred-01.jpg", "alt": "Bazén so zelenou vodou pred čistením" },
+        { "src": "assets/references/bazen-cistenie-02.jpg", "alt": "Tlakové čistenie bazéna" },
+        { "src": "assets/references/bazen-cistenie-03.jpg", "alt": "Čistenie stien bazéna zvnútra" },
+        { "src": "assets/references/bazen-po-04.jpg", "alt": "Čistý bazén po servise" }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Montáž záhradného nábytku",
+      "description": "Kompletná montáž ratanového záhradného nábytku na terase - zostavenie sedacej súpravy, jedálenského setu a lehátok. Vrátane rozloženia a usporiadania podľa želania zákazníka.",
+      "location": "Košice",
+      "date": "2025-07",
+      "tags": ["hodinovy-majster", "exterier"],
+      "photos": [
+        { "src": "assets/references/nabytok-montaz-01.jpg", "alt": "Montáž záhradného nábytku na terase" },
+        { "src": "assets/references/nabytok-montaz-02.jpg", "alt": "Skladanie ratanového nábytku" },
+        { "src": "assets/references/nabytok-montaz-03.jpg", "alt": "Montáž ratanového lehátka" },
+        { "src": "assets/references/nabytok-hotovo-04.jpg", "alt": "Hotová terasa s paletovým sedením" }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Rekonštrukcia skleníka",
+      "description": "Kompletná obnova skleníka - prekopanie záhonov, položenie dlažby na chodníku, inštalácia kvapkovej závlahy a výsadba paradajok a zeleniny. Skleník pripravený na pestovateľskú sezónu.",
+      "location": "Košice",
+      "date": "2025-05",
+      "tags": ["zahradne-prace", "exterier"],
+      "photos": [
+        { "src": "assets/references/sklenik-kopanie-01.jpg", "alt": "Prekopávanie záhonov v skleníku" },
+        { "src": "assets/references/sklenik-dlazba-02.jpg", "alt": "Kladenie dlažby v skleníku" },
+        { "src": "assets/references/sklenik-celok-03.jpg", "alt": "Skleník - celkový pohľad na záhony" },
+        { "src": "assets/references/sklenik-vysadba-04.jpg", "alt": "Vysadené sadenice s kvapkovou závlahou" },
+        { "src": "assets/references/sklenik-noc-05.jpg", "alt": "Skleník s osvetlením v noci" }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Údržba záhrady a strihanie plotu",
+      "description": "Kompletná údržba zanedbanej záhrady - kosenie trávnika krovinorezom, strihanie vysokého živého plotu pri bazéne, odvoz suchých kríkov a vyčistenie pozemku.",
+      "location": "Košice-okolie",
+      "date": "2025-08",
+      "tags": ["zahradne-prace", "exterier"],
+      "photos": [
+        { "src": "assets/references/zahrada-pred-03.jpg", "alt": "Zarastená záhrada pred údržbou" },
+        { "src": "assets/references/zahrada-kosenie-01.jpg", "alt": "Kosenie trávnika krovinorezom" },
+        { "src": "assets/references/zahrada-plot-02.jpg", "alt": "Strihanie živého plotu pri bazéne" },
+        { "src": "assets/references/zahrada-odvoz-05.jpg", "alt": "Odvoz suchých kríkov" },
+        { "src": "assets/references/zahrada-po-04.jpg", "alt": "Vyčistená a upravená záhrada" }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Pílenie a odvoz stromov",
+      "description": "Pílenie starých a suchých stromov motorovou pílou, rozrezanie na kusy a odvoz odpadu. Bezpečná likvidácia pňov v záhrade.",
+      "location": "Košice",
+      "date": "2025-11",
+      "tags": ["zahradne-prace", "exterier"],
+      "photos": [
+        { "src": "assets/references/stromy-pilenie-01.jpg", "alt": "Pílenie stromov motorovou pílou" },
+        { "src": "assets/references/stromy-pilenie-02.jpg", "alt": "Rezanie pňa v záhrade" }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Vypratávanie terasy a garáže",
+      "description": "Kompletné vypratávanie terasy a priľahlých priestorov - triedenie starých chemikálií, čistiacich prostriedkov a nepotrebných vecí, odvoz na zberný dvor.",
+      "location": "Košice",
+      "date": "2025-06",
+      "tags": ["vypratavanie", "exterier"],
+      "photos": [
+        { "src": "assets/references/vypratavanie-terasa-02.jpg", "alt": "Terasa pred vypratávaním" },
+        { "src": "assets/references/vypratavanie-veci-01.jpg", "alt": "Vytriedené staré veci a chemikálie" },
+        { "src": "assets/references/vypratavanie-triedenie-03.jpg", "alt": "Triedenie vecí na odvoz" }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Čistenie chodníka a plotu",
+      "description": "Tlakové čistenie chodníka pozdĺž plotu pri ceste. Odstránenie machu, nečistôt a zarastenia z dlažby.",
+      "location": "Košice-okolie",
+      "date": "2025-07",
+      "tags": ["tlakove-cistenie", "exterier"],
+      "photos": [
+        { "src": "assets/references/chodnik-pred-01.jpg", "alt": "Zarastený chodník pri plote pred čistením" },
+        { "src": "assets/references/chodnik-cistenie-02.jpg", "alt": "Čistenie chodníka" }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "Záhradná sprcha s ohrevom a osvetlením",
+      "description": "Stavba záhradnej sprchy s ohrevom vody a LED páskovým osvetlením. Drevená konštrukcia s napojením na vodu a elektro.",
+      "location": "Košice",
+      "date": "2025-08",
+      "tags": ["hodinovy-majster", "exterier"],
+      "photos": [
+        { "src": "assets/references/pristresok-hotovo-01.jpg", "alt": "Záhradná sprcha s ohrevom a LED osvetlením" }
       ]
     }
   ],
