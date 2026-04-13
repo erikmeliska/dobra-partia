@@ -1234,44 +1234,50 @@
                 noResults.classList.add('hidden');
 
                 filtered.forEach(function(project) {
-                    project.photos.forEach(function(photo, photoIndex) {
-                        var item = document.createElement('div');
-                        item.className = 'gallery-item relative group';
+                    var cover = project.photos[0];
+                    var item = document.createElement('div');
+                    item.className = 'gallery-item relative group';
 
-                        var img = document.createElement('img');
-                        img.src = photo.src;
-                        img.alt = photo.alt;
-                        img.className = 'w-full h-64 object-cover';
-                        img.loading = 'lazy';
+                    var img = document.createElement('img');
+                    img.src = cover.src;
+                    img.alt = cover.alt;
+                    img.className = 'w-full h-64 object-cover';
+                    img.loading = 'lazy';
 
-                        var overlay = document.createElement('div');
-                        overlay.className = 'absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5';
+                    var overlay = document.createElement('div');
+                    overlay.className = 'absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5';
 
-                        var title = document.createElement('h3');
-                        title.className = 'text-white font-bold text-lg mb-1';
-                        title.textContent = project.title;
+                    var title = document.createElement('h3');
+                    title.className = 'text-white font-bold text-lg mb-1';
+                    title.textContent = project.title;
 
-                        var loc = document.createElement('p');
-                        loc.className = 'text-white/70 text-sm';
-                        loc.textContent = project.location;
+                    var loc = document.createElement('p');
+                    loc.className = 'text-white/70 text-sm';
+                    loc.textContent = project.location;
 
-                        var tagContainer = document.createElement('div');
-                        tagContainer.className = 'flex gap-1 mt-2';
-                        project.tags.forEach(function(t) {
-                            var tagEl = document.createElement('span');
-                            tagEl.className = 'text-xs bg-white/20 text-white px-2 py-0.5 rounded-full';
-                            tagEl.textContent = refData.tags[t] || t;
-                            tagContainer.appendChild(tagEl);
-                        });
-
-                        overlay.appendChild(title);
-                        overlay.appendChild(loc);
-                        overlay.appendChild(tagContainer);
-                        item.appendChild(img);
-                        item.appendChild(overlay);
-                        item.addEventListener('click', function() { openModal(project, photoIndex); });
-                        grid.appendChild(item);
+                    var tagContainer = document.createElement('div');
+                    tagContainer.className = 'flex flex-wrap gap-1 mt-2';
+                    project.tags.forEach(function(t) {
+                        var tagEl = document.createElement('span');
+                        tagEl.className = 'text-xs bg-white/20 text-white px-2 py-0.5 rounded-full';
+                        tagEl.textContent = refData.tags[t] || t;
+                        tagContainer.appendChild(tagEl);
                     });
+
+                    if (project.photos.length > 1) {
+                        var badge = document.createElement('div');
+                        badge.className = 'absolute top-3 right-3 bg-black/50 text-white text-xs px-2 py-1 rounded-full';
+                        badge.textContent = project.photos.length + ' fotiek';
+                        item.appendChild(badge);
+                    }
+
+                    overlay.appendChild(title);
+                    overlay.appendChild(loc);
+                    overlay.appendChild(tagContainer);
+                    item.appendChild(img);
+                    item.appendChild(overlay);
+                    item.addEventListener('click', function() { openModal(project, 0); });
+                    grid.appendChild(item);
                 });
             }
 
