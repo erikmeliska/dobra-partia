@@ -146,14 +146,14 @@
     },
     {
       "id": 8,
-      "title": "Čistenie chodníka a plotu",
-      "description": "Tlakové čistenie chodníka pozdĺž plotu pri ceste. Odstránenie machu, nečistôt a zarastenia z dlažby.",
+      "title": "Kosenie chodníka pri plote",
+      "description": "Vyčistenie zarasteného chodníka pozdĺž plotu pri ceste strunovou kosačkou. Odstránenie buriny a trávy z dlažby a okrajov.",
       "location": "Košice-okolie",
       "date": "2025-07",
-      "tags": ["tlakove-cistenie", "exterier"],
+      "tags": ["zahradne-prace", "exterier"],
       "photos": [
-        { "src": "assets/references/chodnik-pred-01.jpg", "alt": "Zarastený chodník pri plote pred čistením" },
-        { "src": "assets/references/chodnik-cistenie-02.jpg", "alt": "Čistenie chodníka" }
+        { "src": "assets/references/chodnik-pred-01.jpg", "alt": "Zarastený chodník pri plote pred kosením" },
+        { "src": "assets/references/chodnik-cistenie-02.jpg", "alt": "Kosenie chodníka strunovou kosačkou" }
       ]
     },
     {
