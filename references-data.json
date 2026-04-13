@@ -86,8 +86,7 @@
       "photos": [
         { "src": "assets/references/nabytok-montaz-01.jpg", "alt": "Montáž záhradného nábytku na terase" },
         { "src": "assets/references/nabytok-montaz-02.jpg", "alt": "Skladanie ratanového nábytku" },
-        { "src": "assets/references/nabytok-montaz-03.jpg", "alt": "Montáž ratanového lehátka" },
-        { "src": "assets/references/nabytok-hotovo-04.jpg", "alt": "Hotová terasa s paletovým sedením" }
+        { "src": "assets/references/nabytok-montaz-03.jpg", "alt": "Montáž ratanového lehátka" }
       ]
     },
     {
@@ -165,7 +164,8 @@
       "date": "2025-08",
       "tags": ["hodinovy-majster", "exterier"],
       "photos": [
-        { "src": "assets/references/pristresok-hotovo-01.jpg", "alt": "Záhradná sprcha s ohrevom a LED osvetlením" }
+        { "src": "assets/references/pristresok-hotovo-01.jpg", "alt": "Záhradná sprcha s ohrevom a LED osvetlením" },
+        { "src": "assets/references/sprcha-terasa-02.jpg", "alt": "Terasa so sprchou a paletovým sedením" }
       ]
     }
   ],
