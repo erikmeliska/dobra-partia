@@ -1,2 +1,4 @@
 screenshots/
 .playwright-mcp/
+n8n-workflow.json
+n8n-sample-data.csv
