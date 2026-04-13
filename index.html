@@ -72,6 +72,18 @@
                 border-radius: 12px;
                 z-index: 1;
             }
+            /* Carousel */
+            .carousel-slide { min-width: 100%; padding: 0 1rem; box-sizing: border-box; }
+            @media (min-width: 768px) { .carousel-slide { min-width: 50%; } }
+            @media (min-width: 1024px) { .carousel-slide { min-width: 33.333%; } }
+            /* Gallery */
+            .gallery-item { cursor: pointer; overflow: hidden; border-radius: 1rem; }
+            .gallery-item img { transition: transform 0.3s ease; }
+            .gallery-item:hover img { transform: scale(1.05); }
+            .tag-btn.active { background-color: var(--teal); color: white; }
+            /* Modal thumb */
+            .thumb { opacity: 0.5; cursor: pointer; transition: opacity 0.2s; }
+            .thumb.active { opacity: 1; outline: 2px solid var(--teal); outline-offset: 2px; }
             .mobile-menu {
                 transform: translateX(100%);
                 transition: transform 0.3s ease-in-out;
@@ -134,6 +146,11 @@
                             >O nás</a
                         >
                         <a
+                            href="#referencie"
+                            class="text-gray-600 hover:text-teal font-medium transition"
+                            >Referencie</a
+                        >
+                        <a
                             href="#kontakt"
                             class="bg-terracotta text-white px-6 py-2 rounded-full font-bold hover:opacity-90 transition shadow-md"
                             >Rezervovať termín</a
@@ -172,6 +189,11 @@
                         href="o-nas.html"
                         class="text-gray-700 font-medium text-lg"
                         >O nás</a
+                    >
+                    <a
+                        href="#referencie"
+                        class="text-gray-700 font-medium text-lg"
+                        >Referencie</a
                     >
                     <a
                         href="#kontakt"
@@ -422,6 +444,65 @@
                 </div>
             </div>
         </section>
+
+        <!-- Referencie - Čo hovoria zákazníci -->
+        <section id="referencie" class="py-24 max-w-7xl mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-navy mb-4">Čo hovoria zákazníci</h2>
+                <div class="w-24 h-1 bg-teal mx-auto"></div>
+            </div>
+            <div class="relative">
+                <div class="overflow-hidden">
+                    <div id="carousel-track" class="flex transition-transform duration-500"></div>
+                </div>
+                <button id="carousel-prev" class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-navy hover:bg-gray-50 transition z-10">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button id="carousel-next" class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-navy hover:bg-gray-50 transition z-10">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+            <div class="flex justify-center gap-2 mt-6" id="carousel-dots"></div>
+        </section>
+
+        <!-- Galéria realizácií -->
+        <section id="realizacie" class="py-24 bg-white">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-navy mb-4">Naše realizácie</h2>
+                    <p class="text-gray-500 max-w-2xl mx-auto">Vybrané projekty z Košického kraja.</p>
+                    <div class="w-24 h-1 bg-teal mx-auto mt-4"></div>
+                </div>
+                <div class="flex flex-wrap justify-center gap-2 mb-10" id="tag-filters"></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="gallery-grid"></div>
+                <div id="no-results" class="hidden text-center py-16 text-gray-400">
+                    <i class="fas fa-search text-4xl mb-4 block"></i>
+                    <p>Pre tento filter zatiaľ nemáme realizácie.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Detail Modal -->
+        <div id="project-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/85 opacity-0 pointer-events-none transition-opacity duration-300">
+            <div id="modal-content" class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto scale-95 transition-transform duration-300">
+                <div class="relative">
+                    <img id="modal-main-photo" src="" alt="" class="w-full h-64 sm:h-80 md:h-96 object-cover rounded-t-2xl">
+                    <button id="modal-close" class="absolute top-4 right-4 w-10 h-10 bg-white/90 rounded-full flex items-center justify-center text-gray-700 hover:bg-white transition shadow-lg">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div id="modal-thumbs" class="flex gap-2 px-6 pt-4 overflow-x-auto"></div>
+                <div class="p-6">
+                    <div class="flex flex-wrap gap-2 mb-3" id="modal-tags"></div>
+                    <h3 id="modal-title" class="text-2xl font-bold text-navy mb-2"></h3>
+                    <div class="flex items-center gap-4 text-sm text-gray-400 mb-4">
+                        <span><i class="fas fa-map-marker-alt mr-1"></i> <span id="modal-location"></span></span>
+                        <span><i class="fas fa-calendar mr-1"></i> <span id="modal-date"></span></span>
+                    </div>
+                    <p id="modal-description" class="text-gray-600 leading-relaxed"></p>
+                </div>
+            </div>
+        </div>
 
         <!-- Kontaktný formulár s mapou -->
         <section id="kontakt" class="py-24 max-w-5xl mx-auto px-4">
@@ -755,6 +836,13 @@
                             </li>
                             <li>
                                 <a
+                                    href="#referencie"
+                                    class="hover:text-white transition"
+                                    >Referencie</a
+                                >
+                            </li>
+                            <li>
+                                <a
                                     href="ochrana-sukromia.html"
                                     class="hover:text-white transition"
                                     >Ochrana súkromia</a
@@ -985,6 +1073,272 @@
                         submitBtn.textContent = "Odoslať nezáväzný dopyt";
                     });
             });
+        </script>
+
+        <!-- Referencie script -->
+        <script>
+        (function() {
+            var refData = null;
+
+            fetch('references-data.json')
+                .then(function(r) { return r.json(); })
+                .then(function(d) {
+                    refData = d;
+                    renderCarousel();
+                    renderTagFilters();
+                    renderGallery('all');
+                });
+
+            // CAROUSEL
+            var carouselIndex = 0;
+            var slidesPerView = 1;
+
+            function getSlidesPerView() {
+                if (window.innerWidth >= 1024) return 3;
+                if (window.innerWidth >= 768) return 2;
+                return 1;
+            }
+
+            function renderCarousel() {
+                var track = document.getElementById('carousel-track');
+                while (track.firstChild) track.removeChild(track.firstChild);
+
+                refData.testimonials.forEach(function(t) {
+                    var slide = document.createElement('div');
+                    slide.className = 'carousel-slide';
+
+                    var card = document.createElement('div');
+                    card.className = 'bg-white p-8 rounded-2xl shadow-md h-full flex flex-col';
+
+                    var starsSpan = document.createElement('span');
+                    starsSpan.className = 'text-yellow-400 mb-4 flex gap-1';
+                    for (var i = 0; i < t.rating; i++) {
+                        var star = document.createElement('i');
+                        star.className = 'fas fa-star';
+                        starsSpan.appendChild(star);
+                    }
+
+                    var quote = document.createElement('p');
+                    quote.className = 'text-gray-600 italic flex-grow mb-6 leading-relaxed';
+                    quote.textContent = '\u201E' + t.text + '\u201C';
+
+                    var footer = document.createElement('div');
+                    footer.className = 'flex items-center gap-3 mt-auto';
+
+                    var avatar = document.createElement('div');
+                    avatar.className = 'w-10 h-10 bg-teal/10 rounded-full flex items-center justify-center text-teal font-bold';
+                    avatar.textContent = t.author.charAt(0);
+
+                    var info = document.createElement('div');
+                    var name = document.createElement('div');
+                    name.className = 'font-bold text-navy text-sm';
+                    name.textContent = t.author;
+                    var loc = document.createElement('div');
+                    loc.className = 'text-gray-400 text-xs';
+                    loc.textContent = t.location;
+
+                    info.appendChild(name);
+                    info.appendChild(loc);
+                    footer.appendChild(avatar);
+                    footer.appendChild(info);
+                    card.appendChild(starsSpan);
+                    card.appendChild(quote);
+                    card.appendChild(footer);
+                    slide.appendChild(card);
+                    track.appendChild(slide);
+                });
+
+                slidesPerView = getSlidesPerView();
+                carouselIndex = 0;
+                updateCarousel();
+                renderDots();
+            }
+
+            function updateCarousel() {
+                var track = document.getElementById('carousel-track');
+                track.style.transform = 'translateX(' + -(carouselIndex * (100 / slidesPerView)) + '%)';
+            }
+
+            function renderDots() {
+                var container = document.getElementById('carousel-dots');
+                while (container.firstChild) container.removeChild(container.firstChild);
+                var total = Math.max(refData.testimonials.length - slidesPerView + 1, 1);
+                for (var i = 0; i < total; i++) {
+                    var dot = document.createElement('button');
+                    dot.className = 'w-2.5 h-2.5 rounded-full transition-all ' + (i === carouselIndex ? 'bg-teal w-6' : 'bg-gray-300');
+                    dot.setAttribute('data-index', i);
+                    dot.addEventListener('click', function() {
+                        carouselIndex = parseInt(this.getAttribute('data-index'));
+                        updateCarousel();
+                        renderDots();
+                    });
+                    container.appendChild(dot);
+                }
+            }
+
+            document.getElementById('carousel-prev').addEventListener('click', function() {
+                if (carouselIndex > 0) { carouselIndex--; updateCarousel(); renderDots(); }
+            });
+            document.getElementById('carousel-next').addEventListener('click', function() {
+                if (carouselIndex < refData.testimonials.length - slidesPerView) { carouselIndex++; updateCarousel(); renderDots(); }
+            });
+            window.addEventListener('resize', function() {
+                slidesPerView = getSlidesPerView();
+                carouselIndex = Math.min(carouselIndex, Math.max(refData.testimonials.length - slidesPerView, 0));
+                updateCarousel();
+                renderDots();
+            });
+
+            // TAG FILTERS
+            var activeTag = 'all';
+
+            function renderTagFilters() {
+                var container = document.getElementById('tag-filters');
+                var allBtn = document.createElement('button');
+                allBtn.className = 'tag-btn px-4 py-2 rounded-full text-sm font-medium border border-gray-200 active';
+                allBtn.textContent = 'Všetky';
+                allBtn.setAttribute('data-tag', 'all');
+                allBtn.addEventListener('click', handleTagClick);
+                container.appendChild(allBtn);
+
+                Object.keys(refData.tags).forEach(function(key) {
+                    var btn = document.createElement('button');
+                    btn.className = 'tag-btn px-4 py-2 rounded-full text-sm font-medium border border-gray-200 text-gray-600 hover:border-teal';
+                    btn.textContent = refData.tags[key];
+                    btn.setAttribute('data-tag', key);
+                    btn.addEventListener('click', handleTagClick);
+                    container.appendChild(btn);
+                });
+            }
+
+            function handleTagClick() {
+                activeTag = this.getAttribute('data-tag');
+                document.querySelectorAll('.tag-btn').forEach(function(b) { b.classList.remove('active'); b.classList.add('text-gray-600'); });
+                this.classList.add('active');
+                this.classList.remove('text-gray-600');
+                renderGallery(activeTag);
+            }
+
+            // GALLERY
+            function renderGallery(tag) {
+                var grid = document.getElementById('gallery-grid');
+                var noResults = document.getElementById('no-results');
+                while (grid.firstChild) grid.removeChild(grid.firstChild);
+
+                var filtered = refData.projects.filter(function(p) {
+                    return tag === 'all' || p.tags.indexOf(tag) !== -1;
+                });
+
+                if (filtered.length === 0) { noResults.classList.remove('hidden'); return; }
+                noResults.classList.add('hidden');
+
+                filtered.forEach(function(project) {
+                    project.photos.forEach(function(photo, photoIndex) {
+                        var item = document.createElement('div');
+                        item.className = 'gallery-item relative group';
+
+                        var img = document.createElement('img');
+                        img.src = photo.src;
+                        img.alt = photo.alt;
+                        img.className = 'w-full h-64 object-cover';
+                        img.loading = 'lazy';
+
+                        var overlay = document.createElement('div');
+                        overlay.className = 'absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5';
+
+                        var title = document.createElement('h3');
+                        title.className = 'text-white font-bold text-lg mb-1';
+                        title.textContent = project.title;
+
+                        var loc = document.createElement('p');
+                        loc.className = 'text-white/70 text-sm';
+                        loc.textContent = project.location;
+
+                        var tagContainer = document.createElement('div');
+                        tagContainer.className = 'flex gap-1 mt-2';
+                        project.tags.forEach(function(t) {
+                            var tagEl = document.createElement('span');
+                            tagEl.className = 'text-xs bg-white/20 text-white px-2 py-0.5 rounded-full';
+                            tagEl.textContent = refData.tags[t] || t;
+                            tagContainer.appendChild(tagEl);
+                        });
+
+                        overlay.appendChild(title);
+                        overlay.appendChild(loc);
+                        overlay.appendChild(tagContainer);
+                        item.appendChild(img);
+                        item.appendChild(overlay);
+                        item.addEventListener('click', function() { openModal(project, photoIndex); });
+                        grid.appendChild(item);
+                    });
+                });
+            }
+
+            // MODAL
+            var modal = document.getElementById('project-modal');
+            var modalContent = document.getElementById('modal-content');
+            var modalPhoto = document.getElementById('modal-main-photo');
+            var modalThumbs = document.getElementById('modal-thumbs');
+            var modalTitle = document.getElementById('modal-title');
+            var modalLocation = document.getElementById('modal-location');
+            var modalDate = document.getElementById('modal-date');
+            var modalDescription = document.getElementById('modal-description');
+            var modalTags = document.getElementById('modal-tags');
+
+            function formatDate(dateStr) {
+                var parts = dateStr.split('-');
+                var months = ['január','február','marec','apríl','máj','jún','júl','august','september','október','november','december'];
+                return months[parseInt(parts[1]) - 1] + ' ' + parts[0];
+            }
+
+            function openModal(project, activePhotoIndex) {
+                modalTitle.textContent = project.title;
+                modalLocation.textContent = project.location;
+                modalDate.textContent = formatDate(project.date);
+                modalDescription.textContent = project.description;
+
+                while (modalTags.firstChild) modalTags.removeChild(modalTags.firstChild);
+                project.tags.forEach(function(t) {
+                    var tag = document.createElement('span');
+                    tag.className = 'text-xs font-medium px-3 py-1 rounded-full bg-teal/10 text-teal';
+                    tag.textContent = refData.tags[t] || t;
+                    modalTags.appendChild(tag);
+                });
+
+                modalPhoto.src = project.photos[activePhotoIndex].src;
+                modalPhoto.alt = project.photos[activePhotoIndex].alt;
+
+                while (modalThumbs.firstChild) modalThumbs.removeChild(modalThumbs.firstChild);
+                if (project.photos.length > 1) {
+                    project.photos.forEach(function(photo, i) {
+                        var thumb = document.createElement('img');
+                        thumb.src = photo.src;
+                        thumb.alt = photo.alt;
+                        thumb.className = 'thumb w-16 h-16 object-cover rounded-lg flex-shrink-0' + (i === activePhotoIndex ? ' active' : '');
+                        thumb.addEventListener('click', function() {
+                            modalPhoto.src = project.photos[i].src;
+                            modalPhoto.alt = project.photos[i].alt;
+                            modalThumbs.querySelectorAll('.thumb').forEach(function(t, idx) { t.classList.toggle('active', idx === i); });
+                        });
+                        modalThumbs.appendChild(thumb);
+                    });
+                }
+
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+                modalContent.classList.remove('scale-95');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeModal() {
+                modal.classList.add('opacity-0', 'pointer-events-none');
+                modalContent.classList.add('scale-95');
+                document.body.style.overflow = '';
+            }
+
+            document.getElementById('modal-close').addEventListener('click', closeModal);
+            modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
+            document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
+        })();
         </script>
     </body>
 </html>

@@ -1,0 +1,74 @@
+{
+  "testimonials": [
+    {
+      "id": 1,
+      "text": "Chalani prišli presne na čas, plot postavili za dva dni. Čistá robota, žiadny neporiadok. Jednoznačne odporúčam!",
+      "author": "Marek K.",
+      "location": "Košice-okolie",
+      "service": "hodinovy-majster",
+      "rating": 5
+    },
+    {
+      "id": 2,
+      "text": "Bazén nám pripravili na sezónu perfektne. Voda krištáľovo čistá, všetko vysvetlili a poradili s údržbou.",
+      "author": "Jana S.",
+      "location": "Michalovce",
+      "service": "bazenovy-servis",
+      "rating": 5
+    },
+    {
+      "id": 3,
+      "text": "Záhradu nám dali do poriadku za jedno dopoludnie. Trávnik ako koberec, živý plot ako podľa pravítka.",
+      "author": "Peter H.",
+      "location": "Trebišov",
+      "service": "zahradne-prace",
+      "rating": 5
+    },
+    {
+      "id": 4,
+      "text": "Vypratali nám celú pivnicu a garáž, odviezli na zberný dvor. Ušetrili sme kopu času a nervov.",
+      "author": "Eva L.",
+      "location": "Spišská Nová Ves",
+      "service": "vypratavanie",
+      "rating": 5
+    },
+    {
+      "id": 5,
+      "text": "Terasa vyzerá ako nová po tlakovom čistení. Nevedela som, že tá dlažba je vlastne svetlá!",
+      "author": "Zuzana M.",
+      "location": "Rožňava",
+      "service": "tlakove-cistenie",
+      "rating": 4
+    }
+  ],
+  "projects": [
+    {
+      "id": 1,
+      "title": "Stavba dreveného plotu",
+      "description": "Kompletná stavba dreveného plotu vrátane osadenia oceľových stĺpikov do betónových pätiek a montáže drevených lamiel. Plot o dĺžke cca 15 metrov s bránkou.",
+      "location": "Košice-okolie",
+      "date": "2026-03",
+      "tags": ["hodinovy-majster", "exterier"],
+      "photos": [
+        {
+          "src": "assets/references/plot-stavba-01.jpg",
+          "alt": "Stavba dreveného plotu - montáž lamiel"
+        },
+        {
+          "src": "assets/references/plot-stlpiky-02.jpg",
+          "alt": "Osádzanie stĺpikov plotu"
+        }
+      ]
+    }
+  ],
+  "tags": {
+    "hodinovy-majster": "Hodinový majster",
+    "zahradne-prace": "Záhradné práce",
+    "bazenovy-servis": "Bazénový servis",
+    "zimna-udrzba": "Zimná údržba",
+    "vypratavanie": "Vypratávanie",
+    "tlakove-cistenie": "Tlakové čistenie",
+    "exterier": "Exteriér",
+    "interier": "Interiér"
+  }
+}
