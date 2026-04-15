@@ -167,6 +167,45 @@
         { "src": "assets/references/pristresok-hotovo-01.jpg", "alt": "Záhradná sprcha s ohrevom a LED osvetlením" },
         { "src": "assets/references/sprcha-terasa-02.jpg", "alt": "Terasa so sprchou a paletovým sedením" }
       ]
+    },
+    {
+      "id": 10,
+      "title": "Montáž polykarbonátového skleníka",
+      "description": "Kompletná montáž nového polykarbonátového skleníka - príprava podkladu, zostavenie konštrukcie a osadenie polykarbonátových panelov. Skleník pripravený na pestovanie.",
+      "location": "Košice-okolie",
+      "date": "2026-04",
+      "tags": ["hodinovy-majster", "zahradne-prace", "exterier"],
+      "photos": [
+        { "src": "assets/references/sklenik-novy-vonku-01.jpg", "alt": "Hotový polykarbonátový skleník" },
+        { "src": "assets/references/sklenik-novy-vnutro-02.jpg", "alt": "Interiér nového skleníka s pripravenou pôdou" },
+        { "src": "assets/references/sklenik-novy-diely-03.jpg", "alt": "Diely skleníka pred montážou" }
+      ]
+    },
+    {
+      "id": 11,
+      "title": "Rez a výrub ovocných stromov",
+      "description": "Odborný rez starých ovocných stromov, výrub suchých stromov motorovou pílou a spracovanie dreva. Čistenie pozemku po výrube.",
+      "location": "Košice-okolie",
+      "date": "2026-02",
+      "tags": ["zahradne-prace", "exterier"],
+      "photos": [
+        { "src": "assets/references/stromy-rez-01.jpg", "alt": "Orezaný ovocný strom" },
+        { "src": "assets/references/stromy-pred-02.jpg", "alt": "Ovocný strom pred rezom" },
+        { "src": "assets/references/stromy-drevo-03.jpg", "alt": "Narezané drevo po výrube" }
+      ]
+    },
+    {
+      "id": 12,
+      "title": "Príprava záhonov a odvoz zeminy",
+      "description": "Prekopanie a príprava záhonov na pestovanie, vŕtanie a montážne práce v záhrade, odvoz prebytočnej zeminy na prívesnom vozíku.",
+      "location": "Košice",
+      "date": "2026-03",
+      "tags": ["zahradne-prace", "exterier"],
+      "photos": [
+        { "src": "assets/references/zahon-priprava-01.jpg", "alt": "Príprava a vŕtanie v záhrade" },
+        { "src": "assets/references/zahon-prekopanie-02.jpg", "alt": "Prekopanie záhona" },
+        { "src": "assets/references/zahon-odvoz-03.jpg", "alt": "Odvoz zeminy na prívesnom vozíku" }
+      ]
     }
   ],
   "tags": {
