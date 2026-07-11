@@ -1,4 +1,4 @@
-// Jednorazový import references-data.json → Referencia + Media.
+// Jednorazový import data/references-data.json → Referencia + Media.
 // Idempotentný: zmaže a nahrá znova. Spustenie: npm run import:referencie
 const fs = require('fs')
 const path = require('path')
@@ -6,7 +6,7 @@ const prisma = require('./index')
 
 async function main() {
   const data = JSON.parse(
-    fs.readFileSync(path.join(__dirname, '../../apps/web/src/data/references-data.json'), 'utf8')
+    fs.readFileSync(path.join(__dirname, 'data/references-data.json'), 'utf8')
   )
   const partia = await prisma.partia.findUniqueOrThrow({ where: { slug: 'kosice' } })
 
