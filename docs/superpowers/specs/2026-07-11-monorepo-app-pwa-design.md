@@ -60,7 +60,7 @@ Schéma sa synchronizuje `prisma db push` **len z jedného miesta** (build `apps
 ## 4. Nová PWA (`apps/app`) — skelet
 
 - **Auth:** Auth.js (credentials) pre 2 užívateľov, dlhé sessions (~30 dní), mobile-first login. Žiadny signup — seed.
-- **PWA:** manifest + service worker (Serwist), inštalácia na plochu, Web Push (nový dopyt pípne obom spoločníkom), offline capture fronta (IndexedDB → sync po pripojení) pripravená pre Fázu 3.
+- **PWA:** manifest + ručne písaný service worker (bez bundlera — Serwist/precaching až keď bude reálne treba), inštalácia na plochu, Web Push (nový dopyt pípne obom spoločníkom). Offline capture fronta (IndexedDB → sync) sa dodá spolu s capture buttonom vo Fáze 3 — v skelete by bola mŕtvy kód; SW základ pre ňu skelet dodáva.
 - **UX princípy z plánu automatizácie platia:** jeden capture button, veľké tlačidlá, ovládanie jednou rukou v rukaviciach, písanie na klávesnici = zlyhanie UX.
 - **Prvý funkčný obsah:** inbox dopytov — zoznam z `Dopyt`, zmena stavu (novy → kontaktovany → dokonceny), tlačidlá volať/SMS. Appka je užitočná od prvého dňa nasadenia.
 
