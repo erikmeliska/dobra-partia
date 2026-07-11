@@ -260,7 +260,7 @@ export default function KontaktForm() {
                   <label htmlFor="gdpr" className="text-xs text-gray-500">
                     Súhlasím so{' '}
                     <a
-                      href="ochrana-sukromia.html"
+                      href="/ochrana-sukromia"
                       className="underline hover:text-teal"
                     >
                       spracovaním osobných údajov
