@@ -1,4 +1,5 @@
 import './globals.css'
+import SwRegister from '@/components/SwRegister'
 
 export const metadata = {
   title: 'Dobrá Partia — Appka',
@@ -12,7 +13,10 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="sk">
-      <body className="bg-sand text-navy min-h-screen">{children}</body>
+      <body className="bg-sand text-navy min-h-screen">
+        <SwRegister />
+        {children}
+      </body>
     </html>
   )
 }
