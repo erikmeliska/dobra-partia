@@ -6,11 +6,15 @@ export const authConfig = {
       return !!auth?.user
     },
     jwt({ token, user }) {
-      if (user) token.partiaId = user.partiaId
+      if (user) {
+        token.partiaId = user.partiaId
+        token.id = user.id
+      }
       return token
     },
     session({ session, token }) {
       session.user.partiaId = token.partiaId
+      session.user.id = token.id ?? token.sub
       return session
     },
   },

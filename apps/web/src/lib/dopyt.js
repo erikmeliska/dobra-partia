@@ -1,5 +1,6 @@
 import prisma from '@/lib/prisma'
 import { sendDiscordMessage } from '@/lib/discord'
+import { notifyAppNovyDopyt } from '@/lib/notify-app'
 
 export async function createDopyt(body) {
   const { meno, telefon, email, adresa, lat, lon, sluzba, popis } = body
@@ -56,6 +57,8 @@ export async function createDopyt(body) {
 
 ⏰ ${dopyt.createdAt.toISOString()}`
     )
+
+    await notifyAppNovyDopyt(dopyt)
 
     return { success: true, message: 'Dopyt bol prijatý', status: 200 }
   } catch (error) {
