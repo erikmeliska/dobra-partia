@@ -19,7 +19,9 @@ ako v `trisoft-web`. Blog sa zobrazí na titulke (3 najnovšie články) aj na s
 | Publisher článkov | **Rovnaký n8n/AI pipeline ako trisoft**, len s vlastnými credentials |
 | Referencie/galéria | **Ostávajú v `references-data.json`**, DB migrácia niekedy neskôr |
 | Styling | **Tailwind 3 build-time** (pôvodný web používa Tailwind Play CDN) |
-| Kontaktný formulár | **n8n webhook sa nahrádza lokálnym API** `POST /api/dopyt` (Postgres + Discord notifikácia) |
+| Kontaktný formulár | **n8n webhook sa nahrádza lokálne**: formulár → Server Action, Postgres + Discord; REST `/api/dopyt` s Basic auth pre externé nástroje |
+| Zabezpečenie API | **Všetky API routes secured** (Basic auth, credentials v `.env`); formulár ide cez Server Action, nie cez verejný endpoint |
+| Existujúce dopyty | **Import z CSV exportu** n8n Data Table (jednorazový skript) |
 
 ## Stack
 
@@ -57,30 +59,40 @@ Prenesené takmer bezo zmeny z `trisoft-web`:
 | `BLOB_READ_WRITE_TOKEN` | Vercel Blob pre media upload |
 | `DISCORD_WEBHOOK` | Discord notifikácie o nových dopytoch (URL z n8n credentials / Discord channel settings) |
 
-## Kontaktný formulár — náhrada n8n webhooku lokálnym API
+## Kontaktný formulár — náhrada n8n webhooku lokálnym spracovaním
 
 Pôvodný n8n workflow (webhook `dobra-partia-dopyt`) robil: insert do n8n Data Table
-„Dopyty - Dobrá Partia", Discord notifikáciu a JSON odpoveď. Nahrádza ho
-`POST /api/dopyt`, ktoré robí to isté lokálne:
+„Dopyty - Dobrá Partia", Discord notifikáciu a JSON odpoveď. Náhrada lokálne,
+so zásadou **všetky API routes sú secured, credentials v .env**:
 
-1. Validácia povinných polí (`meno`, `telefon`, `adresa`, `sluzba`) → 400
-2. Insert do Postgres — nový Prisma model `Dopyt` s rovnakými stĺpcami ako
-   n8n Data Table: `meno, telefon, email, adresa, lat, lon, sluzba, popis,
-   stav (default "novy"), vybavene (default false), createdAt, updatedAt`
-3. Discord notifikácia cez `DISCORD_WEBHOOK` (identický formát správy ako n8n:
-   🔔 NOVÝ DOPYT z webu, meno/telefón/e-mail/adresa/služba/popis, Google Maps
-   link z lat/lon, čas) — zlyhanie Discordu nesmie zhodiť request
-4. Response zhodná s n8n: `{ success: true, message: "Dopyt bol prijatý" }`,
-   pri chybe 500 `{ success: false, message: "Chyba pri spracovaní" }`
+- Zdieľaná logika `createDopyt(data)` v `src/lib/dopyt.js`:
+  1. Validácia povinných polí (`meno`, `telefon`, `adresa`, `sluzba`)
+  2. Insert do Postgres — nový Prisma model `Dopyt` s rovnakými stĺpcami ako
+     n8n Data Table: `meno, telefon, email, adresa, lat, lon, sluzba, popis,
+     stav (default "novy"), vybavene (default false), createdAt, updatedAt`
+  3. Discord notifikácia cez `DISCORD_WEBHOOK` (identický formát správy ako n8n:
+     🔔 NOVÝ DOPYT z webu, meno/telefón/e-mail/adresa/služba/popis, Google Maps
+     link z lat/lon, čas) — zlyhanie Discordu nesmie zhodiť uloženie
+- **Formulár volá Server Action** `odosliDopyt` (`src/actions/dopyt.js`) —
+  same-origin, CSRF ochrana built-in, žiadne credentials v prehliadači
+- **REST `POST /api/dopyt`** pre externé nástroje — chránené Basic auth cez
+  `verifyWpAuth` (rovnaké credentials ako WP API); response zhodná s n8n:
+  `{ success: true, message: "Dopyt bol prijatý" }`, chyba 400/500
+  `{ success: false, message }`
+- Starý n8n workflow sa po nasadení deaktivuje
 
-Formulár posiela rovnaký payload ako doteraz, len na `/api/dopyt` namiesto
-n8n URL. Starý n8n workflow sa po nasadení môže deaktivovať.
+### Import existujúcich dopytov
+
+Export n8n Data Table (`~/Downloads/Dopyty - Dobrá Partia.csv`, 12 riadkov,
+UTF-8 s BOM, stĺpce = model Dopyt bez createdAt) sa jednorazovo naimportuje
+skriptom `scripts/import-dopyty.mjs`. CSV obsahuje osobné údaje — do gitu sa
+NEcommituje, skript áno.
 
 ## Stránky
 
 - `/` — port `index.html`: hero, služby, referencie carousel, galéria realizácií
   s modalom a tag filtrami, kontaktný formulár (Nominatim vyhľadávanie adries,
-  Leaflet mapa, POST na `/api/dopyt`) + **nová sekcia „Z nášho blogu"**
+  Leaflet mapa, odoslanie cez Server Action) + **nová sekcia „Z nášho blogu"**
   s 3 najnovšími publikovanými článkami, umiestnená pred kontaktným formulárom
 - `/blog` — zoznam publikovaných článkov (karta: obrázok, titulok, perex, dátum)
 - `/blog/[slug]` — detail článku, HTML obsah, OG meta per článok

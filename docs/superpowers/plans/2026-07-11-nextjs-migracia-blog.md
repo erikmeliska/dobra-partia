@@ -17,7 +17,7 @@
 - WP API response shape a error kódy presne ako trisoft-web (zdroj: `/Users/ericsko/Projekty/_Bizz/TriSoft/trisoft-web`)
 - Obrázky ostávajú `<img>` (nie `next/image`) — zachovanie 1:1 markup správania
 - Font Awesome 6.5.0 ostáva cez CDN `<link>`; Leaflet sa presúva na npm balík
-- Kontaktný formulár posiela na interné `POST /api/dopyt` (náhrada za pôvodný n8n webhook) — response shape `{ success, message }` zhodná s n8n
+- Všetky API routes sú secured Basic auth cez `verifyWpAuth`, credentials v `.env`; kontaktný formulár preto ide cez Server Action `odosliDopyt` (same-origin, žiadne credentials v prehliadači), REST `POST /api/dopyt` s Basic auth je pre externé nástroje — response shape `{ success, message }` zhodná s n8n
 - Env: `DATABASE_URL`, `WP_USERNAME`, `WP_PASSWORD`, `BLOB_READ_WRITE_TOKEN`, `DISCORD_WEBHOOK`
 - Žiadny test framework sa nezavádza — každý task má presné manuálne verifikačné kroky (curl / dev server / build); commit až po úspešnej verifikácii
 - Konverzia HTML→JSX: `class`→`className`, `for`→`htmlFor`, self-closing tagy (`<img />`, `<input />`), komentáre `{/* */}`, inline `onclick` neexistuje (všetko cez React handlery)
@@ -600,14 +600,27 @@ git commit -m "feat: galéria realizácií s filtrami a modalom"
 ### Task 5: Kontaktný formulár — Nominatim, Leaflet (client komponent)
 
 **Files:**
-- Create: `src/components/home/KontaktForm.jsx`
+- Create: `src/components/home/KontaktForm.jsx`, `src/actions/dopyt.js` (stub)
 - Modify: `src/app/page.js`
 
 **Interfaces:**
 - Consumes: npm balík `leaflet` (nainštalovaný v Task 1)
-- Produces: `<KontaktForm />` bez props — renderuje celú sekciu `#kontakt`
+- Produces: `<KontaktForm />` bez props — renderuje celú sekciu `#kontakt`; `odosliDopyt(data)` → `{ success, message }` (Server Action, v tomto tasku stub)
 
-Formulár posiela na `/api/dopyt` — route vznikne až v Task 9 (potrebuje Prisma z Task 7). V tomto tasku sa verifikuje UI a chybový stav; úspešné odoslanie sa doverifikuje v Task 9.
+Formulár volá Server Action `odosliDopyt` — reálna implementácia príde v Task 9 (potrebuje Prisma z Task 7), tu sa vytvorí stub vracajúci chybu. V tomto tasku sa verifikuje UI a chybový stav; úspešné odoslanie sa doverifikuje v Task 9.
+
+- [ ] **Step 0: Stub Server Action**
+
+`src/actions/dopyt.js`:
+
+```js
+'use server'
+
+// Reálna implementácia (Prisma insert + Discord) príde v Task 9
+export async function odosliDopyt(data) {
+  return { success: false, message: 'Zatiaľ neimplementované' }
+}
+```
 
 - [ ] **Step 1: Implementácia**
 
@@ -618,6 +631,7 @@ Port markup `index.html:519-768` a logiky `index.html:945-1086`. Kľúčové bod
 
 import { useState, useRef, useEffect } from 'react'
 import 'leaflet/dist/leaflet.css'
+import { odosliDopyt } from '@/actions/dopyt'
 
 export default function KontaktForm() {
   const [addressQuery, setAddressQuery] = useState('')
@@ -693,12 +707,8 @@ export default function KontaktForm() {
       zdroj: 'web-formular',
     }
     try {
-      const response = await fetch('/api/dopyt', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      })
-      if (!response.ok) throw new Error('Server error')
+      const result = await odosliDopyt(data)
+      if (!result.success) throw new Error(result.message)
       setStatus('success')
     } catch (err) {
       console.error('Chyba pri odosielaní:', err)
@@ -728,7 +738,7 @@ Markup formulára (polia meno/telefon/email/adresa/sluzba/popis, GDPR checkbox s
 - [ ] **Step 3: Verifikácia**
 
 Run: `npx next dev --port 3457`
-Expected: napíš „Košice" do adresy → našepkávač ukáže výsledky → výber zobrazí Leaflet mapu s markerom. Validácia povinných polí a GDPR checkboxu funguje. Odoslanie zatiaľ skončí error stavom (`/api/dopyt` ešte neexistuje — 404) → zobrazí sa form-error blok; to je očakávané, E2E úspešné odoslanie sa verifikuje v Task 9.
+Expected: napíš „Košice" do adresy → našepkávač ukáže výsledky → výber zobrazí Leaflet mapu s markerom. Validácia povinných polí a GDPR checkboxu funguje. Odoslanie zatiaľ skončí error stavom (stub action vracia `success: false`) → zobrazí sa form-error blok; to je očakávané, E2E úspešné odoslanie sa verifikuje v Task 9.
 
 - [ ] **Step 4: Commit**
 
@@ -1017,16 +1027,17 @@ git commit -m "feat: WordPress fake API (posts, categories, media) — port z tr
 
 ---
 
-### Task 9: Dopyt API — náhrada n8n webhooku (Postgres + Discord)
+### Task 9: Dopyt — Server Action, secured REST API, Discord, CSV import
 
 **Files:**
-- Create: `src/lib/discord.js`, `src/app/api/dopyt/route.js`
+- Create: `src/lib/discord.js`, `src/lib/dopyt.js`, `src/app/api/dopyt/route.js`, `scripts/import-dopyty.mjs`
+- Modify: `src/actions/dopyt.js` (nahradenie stubu z Task 5)
 
 **Interfaces:**
-- Consumes: `prisma` z Task 7 (model `Dopyt`), formulár z Task 5 (POST payload `{ meno, telefon, email, adresa, lat, lon, sluzba, popis, odoslane, zdroj }`)
-- Produces: `POST /api/dopyt` → `{ success: true, message: 'Dopyt bol prijatý' }` | 400/500 `{ success: false, message }`; `sendDiscordMessage(content)` v `src/lib/discord.js`
+- Consumes: `prisma` z Task 7 (model `Dopyt`), `verifyWpAuth` z Task 7, formulár z Task 5 (payload `{ meno, telefon, email, adresa, lat, lon, sluzba, popis, odoslane, zdroj }`)
+- Produces: `createDopyt(data)` v `src/lib/dopyt.js` → `{ success, message, status }`; Server Action `odosliDopyt(data)` → `{ success, message }`; `POST /api/dopyt` (Basic auth) → `{ success: true, message: 'Dopyt bol prijatý' }` | 400/500 `{ success: false, message }`; `sendDiscordMessage(content)` v `src/lib/discord.js`
 
-Pôvodný n8n workflow robil: insert do n8n Data Table „Dopyty - Dobrá Partia" → Discord notifikácia → JSON odpoveď. Toto API robí presne to isté lokálne.
+Pôvodný n8n workflow robil: insert do n8n Data Table „Dopyty - Dobrá Partia" → Discord notifikácia → JSON odpoveď. To isté robí lokálne `createDopyt`, ktorú volajú dve cesty: Server Action (verejný formulár, same-origin) a Basic-auth REST endpoint (externé nástroje).
 
 - [ ] **Step 1: Discord helper**
 
@@ -1049,27 +1060,22 @@ export async function sendDiscordMessage(content) {
 }
 ```
 
-- [ ] **Step 2: API route**
+- [ ] **Step 2: Zdieľaná logika createDopyt**
 
-`src/app/api/dopyt/route.js` — správa pre Discord je doslovný formát z n8n workflow:
+`src/lib/dopyt.js` — správa pre Discord je doslovný formát z n8n workflow:
 
 ```js
-import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 import { sendDiscordMessage } from '@/lib/discord'
 
-export async function POST(request) {
+export async function createDopyt(body) {
+  const { meno, telefon, email, adresa, lat, lon, sluzba, popis } = body
+
+  if (!meno || !telefon || !adresa || !sluzba) {
+    return { success: false, message: 'Chýbajú povinné polia', status: 400 }
+  }
+
   try {
-    const body = await request.json()
-    const { meno, telefon, email, adresa, lat, lon, sluzba, popis } = body
-
-    if (!meno || !telefon || !adresa || !sluzba) {
-      return NextResponse.json(
-        { success: false, message: 'Chýbajú povinné polia' },
-        { status: 400 }
-      )
-    }
-
     const dopyt = await prisma.dopyt.create({
       data: {
         meno,
@@ -1099,31 +1105,133 @@ export async function POST(request) {
 ⏰ ${dopyt.createdAt.toISOString()}`
     )
 
-    return NextResponse.json({ success: true, message: 'Dopyt bol prijatý' })
+    return { success: true, message: 'Dopyt bol prijatý', status: 200 }
   } catch (error) {
     console.error('Dopyt error:', error)
-    return NextResponse.json(
-      { success: false, message: 'Chyba pri spracovaní' },
-      { status: 500 }
-    )
+    return { success: false, message: 'Chyba pri spracovaní', status: 500 }
   }
 }
 ```
 
 (`sendDiscordMessage` nikdy nehodí — zlyhanie Discordu nesmie zhodiť uloženie dopytu.)
 
-- [ ] **Step 3: Verifikácia**
+- [ ] **Step 3: Server Action (nahradenie stubu)**
 
-S bežiacim dev serverom:
+`src/actions/dopyt.js`:
+
+```js
+'use server'
+
+import { createDopyt } from '@/lib/dopyt'
+
+export async function odosliDopyt(data) {
+  const { success, message } = await createDopyt(data)
+  return { success, message }
+}
+```
+
+- [ ] **Step 4: Secured REST endpoint**
+
+`src/app/api/dopyt/route.js` — Basic auth ako všetky API routes:
+
+```js
+import { NextResponse } from 'next/server'
+import { verifyWpAuth } from '@/lib/wp-auth'
+import { createDopyt } from '@/lib/dopyt'
+
+export async function POST(request) {
+  const authError = verifyWpAuth(request)
+  if (authError) return authError
+
+  const body = await request.json()
+  const { success, message, status } = await createDopyt(body)
+  return NextResponse.json({ success, message }, { status })
+}
+```
+
+- [ ] **Step 5: Import CSV skript**
+
+`scripts/import-dopyty.mjs` — jednorazový import n8n exportu. CSV má UTF-8 BOM, quoted polia s čiarkami, stĺpce `meno,telefon,email,adresa,lat,lon,sluzba,popis,stav,vybavene`:
+
+```js
+import { readFileSync } from 'fs'
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
+
+function parseCsv(text) {
+  const rows = []
+  let row = [], field = '', inQuotes = false
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i]
+    if (inQuotes) {
+      if (c === '"' && text[i + 1] === '"') { field += '"'; i++ }
+      else if (c === '"') inQuotes = false
+      else field += c
+    } else if (c === '"') inQuotes = true
+    else if (c === ',') { row.push(field); field = '' }
+    else if (c === '\n' || c === '\r') {
+      if (field !== '' || row.length) { row.push(field); rows.push(row); row = []; field = '' }
+    } else field += c
+  }
+  if (field !== '' || row.length) { row.push(field); rows.push(row) }
+  return rows
+}
+
+const path = process.argv[2]
+if (!path) { console.error('Použitie: node scripts/import-dopyty.mjs <cesta-k-csv>'); process.exit(1) }
+
+const text = readFileSync(path, 'utf8').replace(/^﻿/, '')
+const [header, ...rows] = parseCsv(text)
+console.log('Stĺpce:', header.join(', '))
+
+for (const r of rows) {
+  const rec = Object.fromEntries(header.map((h, i) => [h, r[i] ?? '']))
+  await prisma.dopyt.create({
+    data: {
+      meno: rec.meno,
+      telefon: rec.telefon,
+      email: rec.email || '',
+      adresa: rec.adresa,
+      lat: rec.lat ? parseFloat(rec.lat) : null,
+      lon: rec.lon ? parseFloat(rec.lon) : null,
+      sluzba: rec.sluzba,
+      popis: rec.popis || '',
+      stav: rec.stav || 'novy',
+      vybavene: rec.vybavene === 'true',
+    },
+  })
+  console.log('Importované:', rec.meno)
+}
+
+console.log(`Hotovo: ${rows.length} dopytov`)
+await prisma.$disconnect()
+```
+
+Run: `node scripts/import-dopyty.mjs ~/Downloads/"Dopyty - Dobrá Partia.csv"`
+Expected: `Hotovo: 12 dopytov`
+
+POZOR: CSV obsahuje osobné údaje — NEcommituj ho do repa (ostáva v Downloads), commituje sa len skript. Pôvodné `createdAt` v exporte nie je, importované riadky dostanú aktuálny čas.
+
+- [ ] **Step 6: Verifikácia**
+
+S bežiacim dev serverom (credentials z Task 7):
 
 ```bash
-# validácia
+# bez auth
 curl -s -o /dev/null -w "%{http_code}\n" -X POST http://localhost:3457/api/dopyt \
+  -H 'Content-Type: application/json' -d '{"meno":"X"}'
+# Expected: 401
+
+# s auth, validácia
+curl -s -o /dev/null -w "%{http_code}\n" -u "dobrapartia-publisher:<heslo>" \
+  -X POST http://localhost:3457/api/dopyt \
   -H 'Content-Type: application/json' -d '{"meno":"X"}'
 # Expected: 400
 
-# plný dopyt
-curl -s -X POST http://localhost:3457/api/dopyt -H 'Content-Type: application/json' -d '{
+# s auth, plný dopyt
+curl -s -u "dobrapartia-publisher:<heslo>" -X POST http://localhost:3457/api/dopyt \
+  -H 'Content-Type: application/json' -d '{
   "meno":"TEST — ignorovať","telefon":"+421 900 000 000","email":"",
   "adresa":"Hlavná 1, Košice","lat":"48.72","lon":"21.26",
   "sluzba":"zahradne-prace","popis":"test lokálneho API",
@@ -1131,13 +1239,13 @@ curl -s -X POST http://localhost:3457/api/dopyt -H 'Content-Type: application/js
 # Expected: {"success":true,"message":"Dopyt bol prijatý"}
 ```
 
-Over: riadok v tabuľke Dopyt (`npx prisma studio`), Discord správa v kanáli (ak je `DISCORD_WEBHOOK` v `.env`). Potom E2E cez formulár na `http://localhost:3457/#kontakt` — vyplň, odošli, zobrazí sa success stav (dokončenie verifikácie z Task 5). Testovací riadok potom zmaž v Prisma Studio.
+Over: riadky v tabuľke Dopyt (`npx prisma studio`) — 12 importovaných + 1 testovací; Discord správa v kanáli (ak je `DISCORD_WEBHOOK` v `.env`). Potom E2E cez formulár na `http://localhost:3457/#kontakt` — vyplň, odošli, zobrazí sa success stav (dokončenie verifikácie z Task 5). Testovacie riadky potom zmaž v Prisma Studio.
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 7: Commit**
 
 ```bash
-git add src/lib/discord.js src/app/api/dopyt
-git commit -m "feat: /api/dopyt — náhrada n8n webhooku (Postgres + Discord notifikácia)"
+git add src/lib/discord.js src/lib/dopyt.js src/actions/dopyt.js src/app/api/dopyt scripts/import-dopyty.mjs
+git commit -m "feat: dopyt cez Server Action + secured /api/dopyt + import n8n dopytov"
 ```
 
 ---
@@ -1500,7 +1608,7 @@ git rm -r .playwright-mcp screenshots
 
 - [ ] **Step 3: README update**
 
-Prepíš sekcie Štruktúra (Next.js layout), Funkcie (+ blog), pridaj sekciu „Blog / WP fake API" s endpointami, env premennými a príkladom cURL publish flow (create → media → publish). Sekciu o n8n formulári nahraď popisom `/api/dopyt` (payload, tabuľka Dopyt so stĺpcami stav/vybavene, Discord notifikácia) a poznámkou, že n8n workflow „dobra-partia-dopyt" je nahradený a dá sa deaktivovať.
+Prepíš sekcie Štruktúra (Next.js layout), Funkcie (+ blog), pridaj sekciu „Blog / WP fake API" s endpointami, env premennými a príkladom cURL publish flow (create → media → publish). Sekciu o n8n formulári nahraď popisom nového flow: formulár → Server Action `odosliDopyt` → Postgres tabuľka Dopyt (stĺpce stav/vybavene) + Discord notifikácia; externé nástroje môžu použiť `POST /api/dopyt` s Basic auth (rovnaké credentials ako WP API). Poznámka, že n8n workflow „dobra-partia-dopyt" je nahradený a dá sa deaktivovať.
 
 - [ ] **Step 4: Env na Verceli**
 
