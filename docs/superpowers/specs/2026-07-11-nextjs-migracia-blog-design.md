@@ -1,7 +1,14 @@
 # Migrácia na Next.js + blog cez WordPress fake API — design
 
 **Dátum:** 2026-07-11
-**Stav:** schválené používateľom (brainstorming session)
+**Stav:** ✅ IMPLEMENTOVANÉ A NASADENÉ na produkciu 11. 7. 2026 (www.dobrapartia.sk)
+
+> Poznámky k realizácii oproti specu: DB je **Prisma Postgres** (nie Neon) — bola už
+> pripojená k Vercel projektu; Discord env je `DISCORD_WEBHOOK_URL`; popri migrácii
+> prebehla aj obsahová reorganizácia podľa nového biznis plánu (sekcia „Pre firmy
+> a správcov", nové územie KE+20 min / PO) — viď `business/biznis-plan.md`.
+> Finálny review doplnil abuse limity formulára (honeypot, dĺžkové limity),
+> opravu slug rename v PUT a homepage canonical.
 
 ## Cieľ
 

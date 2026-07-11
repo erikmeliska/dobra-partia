@@ -109,7 +109,8 @@ curl -X POST https://www.dobrapartia.sk/api/dopyt \
 ```
 
 > **Pozn.:** starý n8n workflow „dobra-partia-dopyt" (n8n.ixy.sk) je týmto flow
-> **nahradený** a dá sa deaktivovať — dopyty tečú priamo do Postgres + Discord.
+> **nahradený** — celý reťazec formulár → Postgres → Discord bol 11. 7. 2026
+> overený na produkcii, workflow sa dá deaktivovať.
 
 ## Blog / WordPress fake API
 
@@ -182,10 +183,29 @@ App beží na **http://localhost:3457**.
 ## Deploy
 
 Hostované na **Verceli**, push na `main` deployne produkciu.
+Next.js verzia je naživo od **11. 7. 2026** (nahradila statický HTML web).
 
 - Doména: `www.dobrapartia.sk`
-- GitHub: `erikmeliska/dobra-partia`
+- GitHub: `erikmeliska/dobra-partia` (git remote sa volá `dobra-partia`)
 
 Build script (`package.json`) spúšťa `prisma generate && prisma db push --skip-generate && next build`
 — `prisma db push` je idempotentný a v každom prostredí cieli na správnu DB
 (lokálne Docker, na Verceli Prisma Postgres).
+
+> **Dôležité:** `vercel.json` s `"framework": "nextjs"` je nutný — Vercel projekt
+> má z čias statického webu preset „Other" a bez neho deploy servuje len `public/`
+> (všetky routes vracajú 404). Nemazať.
+>
+> **Sensitive env:** `DATABASE_URL` na Verceli je *sensitive* (write-only) —
+> `vercel env pull` ju vráti prázdnu. Lokálne sa na produkčnú DB pripojíš len
+> connection stringom skopírovaným z dashboardu (Storage → prisma-postgres-dobrapartia).
+
+### Otvorené follow-upy
+
+- [ ] `BLOB_READ_WRITE_TOKEN` pridať na Vercel (dashboard → Storage → Blob) — bez neho
+  padá upload obrázkov cez `/api/wp-json/wp/v2/media` na produkcii
+- [ ] Import 11 historických dopytov z n8n exportu do produkčnej DB
+  (`node scripts/import-dopyty.mjs <csv>` s produkčným `DATABASE_URL`) + zmazať
+  testovací dopyt „TEST Claude — ignorovať" z 11. 7. 2026
+- [ ] Deaktivovať n8n workflow „dobra-partia-dopyt" na n8n.ixy.sk
+- [ ] Prekresliť `public/assets/mapa.jpg` na nové územie (Košice + 20 min / Prešov)

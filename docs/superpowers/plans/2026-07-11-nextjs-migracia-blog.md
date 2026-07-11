@@ -1,5 +1,13 @@
 # Migrácia na Next.js + blog cez WP fake API — implementačný plán
 
+> **STAV: ✅ DOKONČENÉ A NASADENÉ NA PRODUKCIU 11. 7. 2026.** Všetkých 12 taskov
+> implementovaných subagent-driven postupom, každý task zreviewovaný, finálny
+> whole-branch review „Ready to merge: Yes". Kľúčové deviácie oproti plánu:
+> Prisma Postgres namiesto Neon; env `DISCORD_WEBHOOK_URL`; obsahová
+> reorganizácia podľa nového biznis plánu (mimo plánu); `vercel.json` s
+> `"framework": "nextjs"` (projekt mal preset „Other"); finálny review doplnil
+> abuse limity, slug-rename fix a canonical. Follow-upy sú v README (Deploy).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Preniesť statický web dobrapartia.sk 1:1 do Next.js 16 na Verceli a pridať blog napájaný WordPress-kompatibilným fake API (identická implementácia ako trisoft-web).
@@ -36,7 +44,7 @@
 **Interfaces:**
 - Produces: `src/app/layout.js` (root layout s Nav + Footer, importuje globals.css), Tailwind classy `bg-navy`, `text-navy`, `text-teal`, `bg-teal`, `bg-terracotta`, `border-teal`, `bg-sand` dostupné všade, alias `@/` → `src/`
 
-- [ ] **Step 1: package.json a konfigy**
+- [x] **Step 1: package.json a konfigy**
 
 ```json
 {
@@ -130,7 +138,7 @@ node_modules/
 public/uploads/
 ```
 
-- [ ] **Step 2: Presun assetov**
+- [x] **Step 2: Presun assetov**
 
 ```bash
 mkdir -p public src/data
@@ -138,7 +146,7 @@ git mv assets public/assets
 git mv references-data.json src/data/references-data.json
 ```
 
-- [ ] **Step 3: globals.css**
+- [x] **Step 3: globals.css**
 
 Port `<style>` bloku z `index.html:32-118`. Custom farebné utility (`.bg-navy` atď.) NEprenášaj — rieši ich tailwind.config. Prenes zvyšok:
 
@@ -210,7 +218,7 @@ body {
 }
 ```
 
-- [ ] **Step 4: Root layout**
+- [x] **Step 4: Root layout**
 
 `src/app/layout.js`:
 
@@ -261,7 +269,7 @@ export default function RootLayout({ children }) {
 }
 ```
 
-- [ ] **Step 5: Nav a Footer komponenty**
+- [x] **Step 5: Nav a Footer komponenty**
 
 `src/components/Nav.jsx` — client komponent. Port `index.html:122-218` (nav + mobile menu). Mobile menu open/close stav cez `useState` namiesto `classList`:
 
@@ -290,7 +298,7 @@ export default function Nav() {
 
 `src/components/Footer.jsx` — server komponent, port `<footer>` z `index.html:770-925` doslovne (class→className, odkazy na `.html` stránky prepíš na nové routy `/o-nas`, `/ochrana-sukromia`, `/obchodne-podmienky`, kotvy na `/#sekcia`).
 
-- [ ] **Step 6: Placeholder homepage**
+- [x] **Step 6: Placeholder homepage**
 
 `src/app/page.js`:
 
@@ -300,7 +308,7 @@ export default function HomePage() {
 }
 ```
 
-- [ ] **Step 7: Verifikácia**
+- [x] **Step 7: Verifikácia**
 
 Run: `npx next build`
 Expected: build prejde bez chýb.
@@ -308,7 +316,7 @@ Expected: build prejde bez chýb.
 Run: `npx next dev --port 3457` a otvor `http://localhost:3457`
 Expected: nav + footer vyzerajú identicky ako na starom webe (porovnaj so starým `index.html` otvoreným cez `file://`), mobile menu sa otvára/zatvára, farby sedia.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add -A
@@ -327,7 +335,7 @@ git commit -m "feat: Next.js 16 scaffold, Tailwind, layout s nav a footerom"
 - Consumes: layout z Task 1
 - Produces: `<Hero />`, `<Sluzby />`, `<AkoPracujeme />` — čisté server komponenty bez props
 
-- [ ] **Step 1: Port sekcií**
+- [x] **Step 1: Port sekcií**
 
 Doslovný port (konverzné pravidlá z Global Constraints, žiadna logika):
 - `Hero.jsx` ← `<header>` z `index.html:219-268`
@@ -336,7 +344,7 @@ Doslovný port (konverzné pravidlá z Global Constraints, žiadna logika):
 
 Cesty obrázkov: `assets/...` → `/assets/...` (public root).
 
-- [ ] **Step 2: Zapoj do page.js**
+- [x] **Step 2: Zapoj do page.js**
 
 ```jsx
 import Hero from '@/components/home/Hero'
@@ -354,12 +362,12 @@ export default function HomePage() {
 }
 ```
 
-- [ ] **Step 3: Verifikácia**
+- [x] **Step 3: Verifikácia**
 
 Run: `npx next dev --port 3457`
 Expected: sekcie hero/služby/ako-pracujeme vizuálne identické so starým webom (side-by-side porovnanie), kotvy `/#sluzby`, `/#ako-pracujeme` z menu skrolujú správne.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add -A
@@ -378,7 +386,7 @@ git commit -m "feat: port hero, služby a ako-pracujeme sekcií"
 - Consumes: `src/data/references-data.json` (shape: `{ testimonials: [{ author, location, rating, text }], tags: { key: label }, projects: [...] }`)
 - Produces: `<Referencie />` bez props
 
-- [ ] **Step 1: Implementácia**
+- [x] **Step 1: Implementácia**
 
 Port logiky z `index.html:1103-1201` + markup sekcie `index.html:460-477` do Reactu:
 
@@ -474,14 +482,14 @@ export default function Referencie() {
 
 Šípky (`fa-chevron-left/right`) prever proti `index.html:469-474` — použi presne tie ikony, čo sú v origináli. Nadpis sekcie portni doslovne.
 
-- [ ] **Step 2: Zapoj do page.js** — pridaj `<Referencie />` za `<AkoPracujeme />`.
+- [x] **Step 2: Zapoj do page.js** — pridaj `<Referencie />` za `<AkoPracujeme />`.
 
-- [ ] **Step 3: Verifikácia**
+- [x] **Step 3: Verifikácia**
 
 Run: `npx next dev --port 3457`
 Expected: carousel identický so starým webom — 3/2/1 slidy podľa šírky, šípky, bodky (aktívna širšia teal), resize správanie.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add -A
@@ -500,7 +508,7 @@ git commit -m "feat: referencie carousel ako React komponent"
 - Consumes: `src/data/references-data.json` (`projects: [{ title, location, date: 'YYYY-MM', description, tags: [key], photos: [{ src, alt }] }]`, `tags: { key: label }`)
 - Produces: `<Galeria />` bez props
 
-- [ ] **Step 1: Implementácia**
+- [x] **Step 1: Implementácia**
 
 Port markup `index.html:480-517` (sekcia + modal) a logiky `index.html:1203-1358`. Stav: `activeTag` (string, default `'all'`), `modalProject` (objekt alebo `null`), `activePhoto` (index). Kľúčové časti:
 
@@ -581,14 +589,14 @@ export default function Galeria() {
 
 Karty gridu a vnútro modalu prepíš deklaratívne podľa imperatívnej logiky — všetky classy zachovaj doslovne (sú v pláne uvedených riadkoch originálu).
 
-- [ ] **Step 2: Zapoj do page.js** — pridaj `<Galeria />` za `<Referencie />`.
+- [x] **Step 2: Zapoj do page.js** — pridaj `<Galeria />` za `<Referencie />`.
 
-- [ ] **Step 3: Verifikácia**
+- [x] **Step 3: Verifikácia**
 
 Run: `npx next dev --port 3457`
 Expected: filtre prepínajú projekty, karta otvára modal, thumbs prepínajú fotku, Escape aj klik na pozadie zatvára, scroll body sa zamyká, „N fotiek" badge sedí. Porovnaj so starým webom.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add -A
@@ -609,7 +617,7 @@ git commit -m "feat: galéria realizácií s filtrami a modalom"
 
 Formulár volá Server Action `odosliDopyt` — reálna implementácia príde v Task 9 (potrebuje Prisma z Task 7), tu sa vytvorí stub vracajúci chybu. V tomto tasku sa verifikuje UI a chybový stav; úspešné odoslanie sa doverifikuje v Task 9.
 
-- [ ] **Step 0: Stub Server Action**
+- [x] **Step 0: Stub Server Action**
 
 `src/actions/dopyt.js`:
 
@@ -622,7 +630,7 @@ export async function odosliDopyt(data) {
 }
 ```
 
-- [ ] **Step 1: Implementácia**
+- [x] **Step 1: Implementácia**
 
 Port markup `index.html:519-768` a logiky `index.html:945-1086`. Kľúčové body:
 
@@ -733,14 +741,14 @@ export default function KontaktForm() {
 
 Markup formulára (polia meno/telefon/email/adresa/sluzba/popis, GDPR checkbox s `required`, labely, success/error bloky) portni doslovne z uvedených riadkov.
 
-- [ ] **Step 2: Zapoj do page.js** — pridaj `<KontaktForm />` za `<Galeria />`.
+- [x] **Step 2: Zapoj do page.js** — pridaj `<KontaktForm />` za `<Galeria />`.
 
-- [ ] **Step 3: Verifikácia**
+- [x] **Step 3: Verifikácia**
 
 Run: `npx next dev --port 3457`
 Expected: napíš „Košice" do adresy → našepkávač ukáže výsledky → výber zobrazí Leaflet mapu s markerom. Validácia povinných polí a GDPR checkboxu funguje. Odoslanie zatiaľ skončí error stavom (stub action vracia `success: false`) → zobrazí sa form-error blok; to je očakávané, E2E úspešné odoslanie sa verifikuje v Task 9.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add -A
@@ -758,7 +766,7 @@ git commit -m "feat: kontaktný formulár s Nominatim a Leaflet mapou"
 - Consumes: layout (Nav/Footer) z Task 1 — stránky renderujú len obsah `<main>`
 - Produces: routy `/o-nas`, `/ochrana-sukromia`, `/obchodne-podmienky`
 
-- [ ] **Step 1: Port stránok**
+- [x] **Step 1: Port stránok**
 
 Pre každú stránku: obsah medzi nav a footerom portni do `<main>`; nav/footer NEportuj (sú v layoute). Ak sa nav/footer v týchto HTML líši od index.html (skontroluj!), zjednoť na verziu z layoutu. Per-page metadata cez `export const metadata` — title/description/canonical/OG prenes z `<head>` každého HTML, napr.:
 
@@ -777,12 +785,12 @@ export default function ONasPage() {
 
 Interné odkazy `*.html` prepíš na nové routy.
 
-- [ ] **Step 2: Verifikácia**
+- [x] **Step 2: Verifikácia**
 
 Run: `npx next dev --port 3457`
 Expected: všetky tri stránky vizuálne identické s originálmi; `curl -sI http://localhost:3457/o-nas.html | head -3` vráti `308` redirect na `/o-nas`.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add -A
@@ -799,7 +807,7 @@ git commit -m "feat: port stránok o-nas, ochrana-sukromia, obchodne-podmienky"
 **Interfaces:**
 - Produces: `prisma` default export (PrismaClient singleton), `verifyWpAuth(request)` → `NextResponse | null`, modely `BlogPost`, `BlogCategory`, `MediaUpload`, `Dopyt`
 
-- [ ] **Step 1: Schema**
+- [x] **Step 1: Schema**
 
 `prisma/schema.prisma`:
 
@@ -858,7 +866,7 @@ model Dopyt {
 }
 ```
 
-- [ ] **Step 2: Neon databáza**
+- [x] **Step 2: Neon databáza**
 
 Vercel projekt je už linknutý (`.vercel/` existuje). Vytvor Neon DB cez Vercel Marketplace — dashboard projektu → Storage → Create Database → Neon (free tier). Tým sa `DATABASE_URL` pridá do Vercel env. Potom:
 
@@ -871,7 +879,7 @@ Expected: `Your database is now in sync with your Prisma schema.`
 
 Ak dashboard nie je poruke, DATABASE_URL sa dá vytvoriť aj na neon.tech a pridať cez `vercel env add DATABASE_URL`.
 
-- [ ] **Step 3: lib súbory (1:1 z trisoft)**
+- [x] **Step 3: lib súbory (1:1 z trisoft)**
 
 `src/lib/prisma.js`:
 
@@ -925,7 +933,7 @@ export function verifyWpAuth(request) {
 }
 ```
 
-- [ ] **Step 4: WP credentials**
+- [x] **Step 4: WP credentials**
 
 ```bash
 openssl rand -base64 24   # vygeneruj heslo
@@ -939,7 +947,7 @@ WP_PASSWORD=<vygenerované>
 DISCORD_WEBHOOK=<Discord webhook URL — rovnaký, aký používa n8n workflow (Discord channel → Integrations → Webhooks, alebo z n8n credentials "Discord Webhook account")>
 ```
 
-- [ ] **Step 5: Verifikácia**
+- [x] **Step 5: Verifikácia**
 
 Run: `npx prisma generate && npm run build`
 Expected: build prejde (od tohto tasku už funguje aj `npm run build` s prisma generate).
@@ -947,7 +955,7 @@ Expected: build prejde (od tohto tasku už funguje aj `npm run build` s prisma g
 Run: `npx prisma studio` (krátko otvor)
 Expected: vidno prázdne tabuľky BlogPost, MediaUpload, BlogCategory, Dopyt.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add prisma src/lib .gitignore
@@ -970,7 +978,7 @@ git commit -m "feat: Prisma schema (BlogPost, BlogCategory, MediaUpload, Dopyt) 
 
 Všetky štyri súbory sú 1:1 kópie z trisoft-web (`/Users/ericsko/Projekty/_Bizz/TriSoft/trisoft-web/src/app/api/wp-json/wp/v2/...`) — revalidované cesty (`/`, `/blog`, `/sitemap.xml`, `/blog/[slug]`) sú zhodou okolností rovnaké, takže sa kopíruje bezo zmeny.
 
-- [ ] **Step 1: Skopíruj routes**
+- [x] **Step 1: Skopíruj routes**
 
 ```bash
 mkdir -p src/app/api/wp-json/wp/v2
@@ -981,7 +989,7 @@ cp -R /Users/ericsko/Projekty/_Bizz/TriSoft/trisoft-web/src/app/api/wp-json/wp/v
 
 Obsah súborov over — importujú `@/lib/prisma` a `@/lib/wp-auth`, oba existujú z Task 7. Referencia — `posts/route.js` musí obsahovať: `slugify`, `getNextWpId`, `resolveMediaUrl`, `toWpResponse`, `GET` (list, `orderBy createdAt desc`), `POST` (create; 400 bez title, 409 na duplicate slug/P2002, `revalidatePath` na `/`, `/blog`, `/sitemap.xml`, `/blog/${slug}`, 201 s WP response). `posts/[id]/route.js`: `GET` (404 `rest_post_invalid_id`), `PUT` (upsert — recreate ak neexistuje, inak partial update, revalidate), `DELETE` (404 ak neexistuje, vráti `{ deleted: true, previous }`). `categories/route.js`: `GET` list, `POST` create (existujúci slug vráti 200 s existujúcou). `media/route.js`: `POST` formData `file`, Vercel Blob ak `BLOB_READ_WRITE_TOKEN`, inak `public/uploads`, vráti `{ id, source_url, media_details.file }` 201.
 
-- [ ] **Step 2: Verifikácia cez cURL**
+- [x] **Step 2: Verifikácia cez cURL**
 
 Spusti `npx next dev --port 3457` a over celý životný cyklus (heslo z Task 7):
 
@@ -1018,7 +1026,7 @@ curl -s -u "$AUTH" -X DELETE http://localhost:3457/api/wp-json/wp/v2/posts/1
 # Expected: {"deleted":true,...}
 ```
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/app/api
@@ -1039,7 +1047,7 @@ git commit -m "feat: WordPress fake API (posts, categories, media) — port z tr
 
 Pôvodný n8n workflow robil: insert do n8n Data Table „Dopyty - Dobrá Partia" → Discord notifikácia → JSON odpoveď. To isté robí lokálne `createDopyt`, ktorú volajú dve cesty: Server Action (verejný formulár, same-origin) a Basic-auth REST endpoint (externé nástroje).
 
-- [ ] **Step 1: Discord helper**
+- [x] **Step 1: Discord helper**
 
 `src/lib/discord.js` (pattern z trisoft `src/lib/discord.js`, ale plain content ako n8n workflow):
 
@@ -1060,7 +1068,7 @@ export async function sendDiscordMessage(content) {
 }
 ```
 
-- [ ] **Step 2: Zdieľaná logika createDopyt**
+- [x] **Step 2: Zdieľaná logika createDopyt**
 
 `src/lib/dopyt.js` — správa pre Discord je doslovný formát z n8n workflow:
 
@@ -1115,7 +1123,7 @@ export async function createDopyt(body) {
 
 (`sendDiscordMessage` nikdy nehodí — zlyhanie Discordu nesmie zhodiť uloženie dopytu.)
 
-- [ ] **Step 3: Server Action (nahradenie stubu)**
+- [x] **Step 3: Server Action (nahradenie stubu)**
 
 `src/actions/dopyt.js`:
 
@@ -1130,7 +1138,7 @@ export async function odosliDopyt(data) {
 }
 ```
 
-- [ ] **Step 4: Secured REST endpoint**
+- [x] **Step 4: Secured REST endpoint**
 
 `src/app/api/dopyt/route.js` — Basic auth ako všetky API routes:
 
@@ -1149,7 +1157,7 @@ export async function POST(request) {
 }
 ```
 
-- [ ] **Step 5: Import CSV skript**
+- [x] **Step 5: Import CSV skript**
 
 `scripts/import-dopyty.mjs` — jednorazový import n8n exportu. CSV má UTF-8 BOM, quoted polia s čiarkami, stĺpce `meno,telefon,email,adresa,lat,lon,sluzba,popis,stav,vybavene`:
 
@@ -1213,7 +1221,7 @@ Expected: `Hotovo: 12 dopytov`
 
 POZOR: CSV obsahuje osobné údaje — NEcommituj ho do repa (ostáva v Downloads), commituje sa len skript. Pôvodné `createdAt` v exporte nie je, importované riadky dostanú aktuálny čas.
 
-- [ ] **Step 6: Verifikácia**
+- [x] **Step 6: Verifikácia**
 
 S bežiacim dev serverom (credentials z Task 7):
 
@@ -1241,7 +1249,7 @@ curl -s -u "dobrapartia-publisher:<heslo>" -X POST http://localhost:3457/api/dop
 
 Over: riadky v tabuľke Dopyt (`npx prisma studio`) — 12 importovaných + 1 testovací; Discord správa v kanáli (ak je `DISCORD_WEBHOOK` v `.env`). Potom E2E cez formulár na `http://localhost:3457/#kontakt` — vyplň, odošli, zobrazí sa success stav (dokončenie verifikácie z Task 5). Testovacie riadky potom zmaž v Prisma Studio.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/lib/discord.js src/lib/dopyt.js src/actions/dopyt.js src/app/api/dopyt scripts/import-dopyty.mjs
@@ -1261,7 +1269,7 @@ git commit -m "feat: dopyt cez Server Action + secured /api/dopyt + import n8n d
 - Consumes: `prisma` z Task 7 (`blogPost.findMany({ where: { published: true } })`)
 - Produces: `getPublishedPosts(limit)` a `getPostBySlug(slug)` v `src/lib/blog.js`; routy `/blog`, `/blog/[slug]`; `<BlogSekcia posts={posts} />`
 
-- [ ] **Step 1: Data helper**
+- [x] **Step 1: Data helper**
 
 `src/lib/blog.js`:
 
@@ -1285,7 +1293,7 @@ export function formatPostDate(date) {
 }
 ```
 
-- [ ] **Step 2: /blog zoznam**
+- [x] **Step 2: /blog zoznam**
 
 `src/app/blog/page.js` — dizajn v duchu existujúceho webu (sand pozadie, navy nadpisy, biele karty ako galéria):
 
@@ -1350,7 +1358,7 @@ export default async function BlogPage() {
 }
 ```
 
-- [ ] **Step 3: /blog/[slug] detail**
+- [x] **Step 3: /blog/[slug] detail**
 
 `src/app/blog/[slug]/page.js`:
 
@@ -1423,7 +1431,7 @@ Do `globals.css` pridaj typografiu pre obsah článku (obsah prichádza ako HTML
 .blog-content blockquote { border-left: 4px solid var(--teal); padding-left: 1rem; font-style: italic; margin: 1.5rem 0; }
 ```
 
-- [ ] **Step 4: Sekcia na titulke**
+- [x] **Step 4: Sekcia na titulke**
 
 `src/components/home/BlogSekcia.jsx` (server komponent):
 
@@ -1510,7 +1518,7 @@ export default async function HomePage() {
 }
 ```
 
-- [ ] **Step 5: Verifikácia**
+- [x] **Step 5: Verifikácia**
 
 S bežiacim dev serverom vytvor a publikuj článok cez cURL (ako v Task 8, status `publish`). Potom:
 - `http://localhost:3457/blog` — článok v zozname s dátumom po slovensky
@@ -1519,7 +1527,7 @@ S bežiacim dev serverom vytvor a publikuj článok cez cURL (ako v Task 8, stat
 - zmaž článok cez `DELETE` → sekcia na titulke zmizne (0 článkov), `/blog` ukáže prázdny stav
 - `curl -s http://localhost:3457/blog/neexistuje -o /dev/null -w "%{http_code}\n"` → `404`
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add -A
@@ -1536,7 +1544,7 @@ git commit -m "feat: blog stránky a sekcia Z nášho blogu na titulke"
 **Interfaces:**
 - Consumes: `getPublishedPosts` z Task 10
 
-- [ ] **Step 1: sitemap.js**
+- [x] **Step 1: sitemap.js**
 
 ```js
 import { getPublishedPosts } from '@/lib/blog'
@@ -1562,7 +1570,7 @@ export default async function sitemap() {
 }
 ```
 
-- [ ] **Step 2: robots.js**
+- [x] **Step 2: robots.js**
 
 ```js
 export default function robots() {
@@ -1573,12 +1581,12 @@ export default function robots() {
 }
 ```
 
-- [ ] **Step 3: Verifikácia**
+- [x] **Step 3: Verifikácia**
 
 Run: `curl -s http://localhost:3457/sitemap.xml` → obsahuje statické stránky + publikované blog slugy.
 Run: `curl -s http://localhost:3457/robots.txt` → `Disallow: /api/` a odkaz na sitemap.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/app/sitemap.js src/app/robots.js
@@ -1593,11 +1601,11 @@ git commit -m "seo: sitemap a robots"
 - Delete: `index.html`, `o-nas.html`, `ochrana-sukromia.html`, `obchodne-podmienky.html`, `.playwright-mcp/`, `screenshots/` (ak už netreba)
 - Modify: `README.md`
 
-- [ ] **Step 1: Finálne porovnanie so starým webom**
+- [x] **Step 1: Finálne porovnanie so starým webom**
 
 Pred zmazaním otvor starý `index.html` cez `file://` vedľa `http://localhost:3457` a prejdi sekciu po sekcii (desktop aj mobil šírka). Rozdiely oprav.
 
-- [ ] **Step 2: Zmaž staré súbory**
+- [x] **Step 2: Zmaž staré súbory**
 
 ```bash
 git rm index.html o-nas.html ochrana-sukromia.html obchodne-podmienky.html
@@ -1606,11 +1614,11 @@ git rm -r .playwright-mcp screenshots
 
 (Ostávajú v git histórii — návrat je možný kedykoľvek.)
 
-- [ ] **Step 3: README update**
+- [x] **Step 3: README update**
 
 Prepíš sekcie Štruktúra (Next.js layout), Funkcie (+ blog), pridaj sekciu „Blog / WP fake API" s endpointami, env premennými a príkladom cURL publish flow (create → media → publish). Sekciu o n8n formulári nahraď popisom nového flow: formulár → Server Action `odosliDopyt` → Postgres tabuľka Dopyt (stĺpce stav/vybavene) + Discord notifikácia; externé nástroje môžu použiť `POST /api/dopyt` s Basic auth (rovnaké credentials ako WP API). Poznámka, že n8n workflow „dobra-partia-dopyt" je nahradený a dá sa deaktivovať.
 
-- [ ] **Step 4: Env na Verceli**
+- [x] **Step 4: Env na Verceli**
 
 ```bash
 vercel env add WP_USERNAME production   # dobrapartia-publisher
@@ -1620,7 +1628,7 @@ vercel env add DISCORD_WEBHOOK production   # Discord webhook URL z Task 7
 
 `BLOB_READ_WRITE_TOKEN`: dashboard → Storage → Create Blob store (pridá token do env automaticky). `DATABASE_URL` už existuje z Task 7.
 
-- [ ] **Step 5: Preview deploy + smoke test**
+- [x] **Step 5: Preview deploy + smoke test**
 
 ```bash
 vercel
@@ -1630,7 +1638,7 @@ Na preview URL over: titulku, galériu, formulár (testovací dopyt „TEST — 
 
 POZOR: preview deploye majú Vercel Authentication — ak cURL na API vracia Vercel SSO stránku, testni API až na produkcii alebo vypni ochranu pre preview.
 
-- [ ] **Step 6: Produkčný deploy**
+- [x] **Step 6: Produkčný deploy**
 
 ```bash
 vercel --prod
@@ -1638,7 +1646,7 @@ vercel --prod
 
 Over `https://www.dobrapartia.sk`: všetky stránky, sitemap, robots, publish + delete testovacieho článku cez API (objaví sa a zmizne na titulke — potvrdí revalidáciu), OG tagy cez `curl -s https://www.dobrapartia.sk | grep og:`.
 
-- [ ] **Step 7: Commit + push**
+- [x] **Step 7: Commit + push**
 
 ```bash
 git add -A
@@ -1646,6 +1654,6 @@ git commit -m "chore: odstránené staré HTML, README pre Next.js verziu"
 git push
 ```
 
-- [ ] **Step 8: Odovzdávka credentials + deaktivácia n8n**
+- [x] **Step 8: Odovzdávka credentials + deaktivácia n8n**
 
 Zapíš `WP_USERNAME`/`WP_PASSWORD` tam, kde ich nájde publikačný pipeline (nie do gitu). Endpoint pre pipeline: `https://www.dobrapartia.sk/api/wp-json/wp/v2/`. Po overení produkčného formulára deaktivuj starý n8n workflow „dobra-partia-dopyt" na n8n.ixy.sk (dopyty už tečú do Postgres + Discord priamo).
