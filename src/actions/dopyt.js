@@ -1,6 +1,8 @@
 'use server'
 
-// Reálna implementácia (Prisma insert + Discord) príde v Task 9
+import { createDopyt } from '@/lib/dopyt'
+
 export async function odosliDopyt(data) {
-  return { success: false, message: 'Zatiaľ neimplementované' }
+  const { success, message } = await createDopyt(data)
+  return { success, message }
 }
