@@ -17,8 +17,8 @@
 - WP API response shape a error kódy presne ako trisoft-web (zdroj: `/Users/ericsko/Projekty/_Bizz/TriSoft/trisoft-web`)
 - Obrázky ostávajú `<img>` (nie `next/image`) — zachovanie 1:1 markup správania
 - Font Awesome 6.5.0 ostáva cez CDN `<link>`; Leaflet sa presúva na npm balík
-- n8n webhook URL: `https://n8n.ixy.sk/webhook/dobra-partia-dopyt`
-- Env: `DATABASE_URL`, `WP_USERNAME`, `WP_PASSWORD`, `BLOB_READ_WRITE_TOKEN`
+- Kontaktný formulár posiela na interné `POST /api/dopyt` (náhrada za pôvodný n8n webhook) — response shape `{ success, message }` zhodná s n8n
+- Env: `DATABASE_URL`, `WP_USERNAME`, `WP_PASSWORD`, `BLOB_READ_WRITE_TOKEN`, `DISCORD_WEBHOOK`
 - Žiadny test framework sa nezavádza — každý task má presné manuálne verifikačné kroky (curl / dev server / build); commit až po úspešnej verifikácii
 - Konverzia HTML→JSX: `class`→`className`, `for`→`htmlFor`, self-closing tagy (`<img />`, `<input />`), komentáre `{/* */}`, inline `onclick` neexistuje (všetko cez React handlery)
 
@@ -597,7 +597,7 @@ git commit -m "feat: galéria realizácií s filtrami a modalom"
 
 ---
 
-### Task 5: Kontaktný formulár — Nominatim, Leaflet, n8n (client komponent)
+### Task 5: Kontaktný formulár — Nominatim, Leaflet (client komponent)
 
 **Files:**
 - Create: `src/components/home/KontaktForm.jsx`
@@ -606,6 +606,8 @@ git commit -m "feat: galéria realizácií s filtrami a modalom"
 **Interfaces:**
 - Consumes: npm balík `leaflet` (nainštalovaný v Task 1)
 - Produces: `<KontaktForm />` bez props — renderuje celú sekciu `#kontakt`
+
+Formulár posiela na `/api/dopyt` — route vznikne až v Task 9 (potrebuje Prisma z Task 7). V tomto tasku sa verifikuje UI a chybový stav; úspešné odoslanie sa doverifikuje v Task 9.
 
 - [ ] **Step 1: Implementácia**
 
@@ -616,8 +618,6 @@ Port markup `index.html:519-768` a logiky `index.html:945-1086`. Kľúčové bod
 
 import { useState, useRef, useEffect } from 'react'
 import 'leaflet/dist/leaflet.css'
-
-const N8N_WEBHOOK_URL = 'https://n8n.ixy.sk/webhook/dobra-partia-dopyt'
 
 export default function KontaktForm() {
   const [addressQuery, setAddressQuery] = useState('')
@@ -693,7 +693,7 @@ export default function KontaktForm() {
       zdroj: 'web-formular',
     }
     try {
-      const response = await fetch(N8N_WEBHOOK_URL, {
+      const response = await fetch('/api/dopyt', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -728,13 +728,13 @@ Markup formulára (polia meno/telefon/email/adresa/sluzba/popis, GDPR checkbox s
 - [ ] **Step 3: Verifikácia**
 
 Run: `npx next dev --port 3457`
-Expected: napíš „Košice" do adresy → našepkávač ukáže výsledky → výber zobrazí Leaflet mapu s markerom. Odošli testovací dopyt (meno „TEST — ignorovať") → zobrazí sa success stav; over v n8n, že webhook prišiel. Validácia povinných polí a GDPR checkboxu funguje.
+Expected: napíš „Košice" do adresy → našepkávač ukáže výsledky → výber zobrazí Leaflet mapu s markerom. Validácia povinných polí a GDPR checkboxu funguje. Odoslanie zatiaľ skončí error stavom (`/api/dopyt` ešte neexistuje — 404) → zobrazí sa form-error blok; to je očakávané, E2E úspešné odoslanie sa verifikuje v Task 9.
 
 - [ ] **Step 4: Commit**
 
 ```bash
 git add -A
-git commit -m "feat: kontaktný formulár s Nominatim, Leaflet mapou a n8n webhookom"
+git commit -m "feat: kontaktný formulár s Nominatim a Leaflet mapou"
 ```
 
 ---
@@ -787,7 +787,7 @@ git commit -m "feat: port stránok o-nas, ochrana-sukromia, obchodne-podmienky"
 - Create: `prisma/schema.prisma`, `src/lib/prisma.js`, `src/lib/wp-auth.js`, `.env` (lokálne, negitované)
 
 **Interfaces:**
-- Produces: `prisma` default export (PrismaClient singleton), `verifyWpAuth(request)` → `NextResponse | null`, modely `BlogPost`, `BlogCategory`, `MediaUpload`
+- Produces: `prisma` default export (PrismaClient singleton), `verifyWpAuth(request)` → `NextResponse | null`, modely `BlogPost`, `BlogCategory`, `MediaUpload`, `Dopyt`
 
 - [ ] **Step 1: Schema**
 
@@ -828,6 +828,23 @@ model BlogCategory {
   id   Int    @id @default(autoincrement())
   name String
   slug String @unique
+}
+
+// Náhrada za n8n Data Table "Dopyty - Dobrá Partia" — rovnaké stĺpce
+model Dopyt {
+  id        String   @id @default(cuid())
+  meno      String
+  telefon   String
+  email     String   @default("")
+  adresa    String
+  lat       Float?
+  lon       Float?
+  sluzba    String
+  popis     String   @default("")
+  stav      String   @default("novy")
+  vybavene  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 ```
 
@@ -904,11 +921,12 @@ export function verifyWpAuth(request) {
 openssl rand -base64 24   # vygeneruj heslo
 ```
 
-Do `.env` pridaj (a zapíš si hodnoty pre n8n pipeline):
+Do `.env` pridaj (a zapíš si hodnoty pre publikačný pipeline):
 
 ```
 WP_USERNAME=dobrapartia-publisher
 WP_PASSWORD=<vygenerované>
+DISCORD_WEBHOOK=<Discord webhook URL — rovnaký, aký používa n8n workflow (Discord channel → Integrations → Webhooks, alebo z n8n credentials "Discord Webhook account")>
 ```
 
 - [ ] **Step 5: Verifikácia**
@@ -917,13 +935,13 @@ Run: `npx prisma generate && npm run build`
 Expected: build prejde (od tohto tasku už funguje aj `npm run build` s prisma generate).
 
 Run: `npx prisma studio` (krátko otvor)
-Expected: vidno prázdne tabuľky BlogPost, MediaUpload, BlogCategory.
+Expected: vidno prázdne tabuľky BlogPost, MediaUpload, BlogCategory, Dopyt.
 
 - [ ] **Step 6: Commit**
 
 ```bash
 git add prisma src/lib .gitignore
-git commit -m "feat: Prisma schema (BlogPost, BlogCategory, MediaUpload) + wp-auth"
+git commit -m "feat: Prisma schema (BlogPost, BlogCategory, MediaUpload, Dopyt) + wp-auth"
 ```
 
 ---
@@ -999,7 +1017,132 @@ git commit -m "feat: WordPress fake API (posts, categories, media) — port z tr
 
 ---
 
-### Task 9: Blog stránky + sekcia na titulke
+### Task 9: Dopyt API — náhrada n8n webhooku (Postgres + Discord)
+
+**Files:**
+- Create: `src/lib/discord.js`, `src/app/api/dopyt/route.js`
+
+**Interfaces:**
+- Consumes: `prisma` z Task 7 (model `Dopyt`), formulár z Task 5 (POST payload `{ meno, telefon, email, adresa, lat, lon, sluzba, popis, odoslane, zdroj }`)
+- Produces: `POST /api/dopyt` → `{ success: true, message: 'Dopyt bol prijatý' }` | 400/500 `{ success: false, message }`; `sendDiscordMessage(content)` v `src/lib/discord.js`
+
+Pôvodný n8n workflow robil: insert do n8n Data Table „Dopyty - Dobrá Partia" → Discord notifikácia → JSON odpoveď. Toto API robí presne to isté lokálne.
+
+- [ ] **Step 1: Discord helper**
+
+`src/lib/discord.js` (pattern z trisoft `src/lib/discord.js`, ale plain content ako n8n workflow):
+
+```js
+export async function sendDiscordMessage(content) {
+  const webhookUrl = process.env.DISCORD_WEBHOOK
+  if (!webhookUrl) return
+
+  try {
+    await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content }),
+    })
+  } catch (err) {
+    console.error('Discord webhook error:', err)
+  }
+}
+```
+
+- [ ] **Step 2: API route**
+
+`src/app/api/dopyt/route.js` — správa pre Discord je doslovný formát z n8n workflow:
+
+```js
+import { NextResponse } from 'next/server'
+import prisma from '@/lib/prisma'
+import { sendDiscordMessage } from '@/lib/discord'
+
+export async function POST(request) {
+  try {
+    const body = await request.json()
+    const { meno, telefon, email, adresa, lat, lon, sluzba, popis } = body
+
+    if (!meno || !telefon || !adresa || !sluzba) {
+      return NextResponse.json(
+        { success: false, message: 'Chýbajú povinné polia' },
+        { status: 400 }
+      )
+    }
+
+    const dopyt = await prisma.dopyt.create({
+      data: {
+        meno,
+        telefon,
+        email: email || '',
+        adresa,
+        lat: lat ? parseFloat(lat) : null,
+        lon: lon ? parseFloat(lon) : null,
+        sluzba,
+        popis: popis || '',
+      },
+    })
+
+    await sendDiscordMessage(
+      `🔔 **NOVÝ DOPYT z webu**
+
+👤 **Meno:** ${dopyt.meno}
+📞 **Telefón:** ${dopyt.telefon}
+📧 **E-mail:** ${dopyt.email || 'neuvedený'}
+
+📍 **Adresa:** ${dopyt.adresa}
+🔧 **Služba:** ${dopyt.sluzba}
+📝 **Popis:** ${dopyt.popis || 'bez popisu'}
+
+🗺️ **Mapa:** https://www.google.com/maps?q=${dopyt.lat},${dopyt.lon}
+
+⏰ ${dopyt.createdAt.toISOString()}`
+    )
+
+    return NextResponse.json({ success: true, message: 'Dopyt bol prijatý' })
+  } catch (error) {
+    console.error('Dopyt error:', error)
+    return NextResponse.json(
+      { success: false, message: 'Chyba pri spracovaní' },
+      { status: 500 }
+    )
+  }
+}
+```
+
+(`sendDiscordMessage` nikdy nehodí — zlyhanie Discordu nesmie zhodiť uloženie dopytu.)
+
+- [ ] **Step 3: Verifikácia**
+
+S bežiacim dev serverom:
+
+```bash
+# validácia
+curl -s -o /dev/null -w "%{http_code}\n" -X POST http://localhost:3457/api/dopyt \
+  -H 'Content-Type: application/json' -d '{"meno":"X"}'
+# Expected: 400
+
+# plný dopyt
+curl -s -X POST http://localhost:3457/api/dopyt -H 'Content-Type: application/json' -d '{
+  "meno":"TEST — ignorovať","telefon":"+421 900 000 000","email":"",
+  "adresa":"Hlavná 1, Košice","lat":"48.72","lon":"21.26",
+  "sluzba":"zahradne-prace","popis":"test lokálneho API",
+  "odoslane":"2026-07-11T12:00:00.000Z","zdroj":"web-formular"}'
+# Expected: {"success":true,"message":"Dopyt bol prijatý"}
+```
+
+Over: riadok v tabuľke Dopyt (`npx prisma studio`), Discord správa v kanáli (ak je `DISCORD_WEBHOOK` v `.env`). Potom E2E cez formulár na `http://localhost:3457/#kontakt` — vyplň, odošli, zobrazí sa success stav (dokončenie verifikácie z Task 5). Testovací riadok potom zmaž v Prisma Studio.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add src/lib/discord.js src/app/api/dopyt
+git commit -m "feat: /api/dopyt — náhrada n8n webhooku (Postgres + Discord notifikácia)"
+```
+
+---
+
+### Task 10: Blog stránky + sekcia na titulke
 
 **Files:**
 - Create: `src/lib/blog.js`, `src/app/blog/page.js`, `src/app/blog/[slug]/page.js`
@@ -1277,13 +1420,13 @@ git commit -m "feat: blog stránky a sekcia Z nášho blogu na titulke"
 
 ---
 
-### Task 10: SEO — sitemap, robots
+### Task 11: SEO — sitemap, robots
 
 **Files:**
 - Create: `src/app/sitemap.js`, `src/app/robots.js`
 
 **Interfaces:**
-- Consumes: `getPublishedPosts` z Task 9
+- Consumes: `getPublishedPosts` z Task 10
 
 - [ ] **Step 1: sitemap.js**
 
@@ -1336,7 +1479,7 @@ git commit -m "seo: sitemap a robots"
 
 ---
 
-### Task 11: Cleanup, README, deploy na Vercel
+### Task 12: Cleanup, README, deploy na Vercel
 
 **Files:**
 - Delete: `index.html`, `o-nas.html`, `ochrana-sukromia.html`, `obchodne-podmienky.html`, `.playwright-mcp/`, `screenshots/` (ak už netreba)
@@ -1357,13 +1500,14 @@ git rm -r .playwright-mcp screenshots
 
 - [ ] **Step 3: README update**
 
-Prepíš sekcie Štruktúra (Next.js layout), Funkcie (+ blog), pridaj sekciu „Blog / WP fake API" s endpointami, env premennými a príkladom cURL publish flow (create → media → publish). Zachovaj sekciu o n8n formulári.
+Prepíš sekcie Štruktúra (Next.js layout), Funkcie (+ blog), pridaj sekciu „Blog / WP fake API" s endpointami, env premennými a príkladom cURL publish flow (create → media → publish). Sekciu o n8n formulári nahraď popisom `/api/dopyt` (payload, tabuľka Dopyt so stĺpcami stav/vybavene, Discord notifikácia) a poznámkou, že n8n workflow „dobra-partia-dopyt" je nahradený a dá sa deaktivovať.
 
 - [ ] **Step 4: Env na Verceli**
 
 ```bash
 vercel env add WP_USERNAME production   # dobrapartia-publisher
 vercel env add WP_PASSWORD production   # heslo z Task 7
+vercel env add DISCORD_WEBHOOK production   # Discord webhook URL z Task 7
 ```
 
 `BLOB_READ_WRITE_TOKEN`: dashboard → Storage → Create Blob store (pridá token do env automaticky). `DATABASE_URL` už existuje z Task 7.
@@ -1374,7 +1518,7 @@ vercel env add WP_PASSWORD production   # heslo z Task 7
 vercel
 ```
 
-Na preview URL over: titulku, galériu, formulár (bez odoslania), `/blog`, publish článku cez cURL na preview API (auth funguje), redirect `/o-nas.html`.
+Na preview URL over: titulku, galériu, formulár (testovací dopyt „TEST — ignorovať" → Discord notifikácia + riadok v DB), `/blog`, publish článku cez cURL na preview API (auth funguje), redirect `/o-nas.html`.
 
 POZOR: preview deploye majú Vercel Authentication — ak cURL na API vracia Vercel SSO stránku, testni API až na produkcii alebo vypni ochranu pre preview.
 
@@ -1394,6 +1538,6 @@ git commit -m "chore: odstránené staré HTML, README pre Next.js verziu"
 git push
 ```
 
-- [ ] **Step 8: Odovzdávka credentials**
+- [ ] **Step 8: Odovzdávka credentials + deaktivácia n8n**
 
-Zapíš `WP_USERNAME`/`WP_PASSWORD` tam, kde ich nájde n8n pipeline (nie do gitu). Endpoint pre pipeline: `https://www.dobrapartia.sk/api/wp-json/wp/v2/`.
+Zapíš `WP_USERNAME`/`WP_PASSWORD` tam, kde ich nájde publikačný pipeline (nie do gitu). Endpoint pre pipeline: `https://www.dobrapartia.sk/api/wp-json/wp/v2/`. Po overení produkčného formulára deaktivuj starý n8n workflow „dobra-partia-dopyt" na n8n.ixy.sk (dopyty už tečú do Postgres + Discord priamo).

@@ -19,6 +19,7 @@ ako v `trisoft-web`. Blog sa zobrazí na titulke (3 najnovšie články) aj na s
 | Publisher článkov | **Rovnaký n8n/AI pipeline ako trisoft**, len s vlastnými credentials |
 | Referencie/galéria | **Ostávajú v `references-data.json`**, DB migrácia niekedy neskôr |
 | Styling | **Tailwind 3 build-time** (pôvodný web používa Tailwind Play CDN) |
+| Kontaktný formulár | **n8n webhook sa nahrádza lokálnym API** `POST /api/dopyt` (Postgres + Discord notifikácia) |
 
 ## Stack
 
@@ -54,12 +55,32 @@ Prenesené takmer bezo zmeny z `trisoft-web`:
 | `DATABASE_URL` | Neon Postgres |
 | `WP_USERNAME` / `WP_PASSWORD` | Basic Auth pre publikačný pipeline (nové credentials, nie trisoft-ové) |
 | `BLOB_READ_WRITE_TOKEN` | Vercel Blob pre media upload |
+| `DISCORD_WEBHOOK` | Discord notifikácie o nových dopytoch (URL z n8n credentials / Discord channel settings) |
+
+## Kontaktný formulár — náhrada n8n webhooku lokálnym API
+
+Pôvodný n8n workflow (webhook `dobra-partia-dopyt`) robil: insert do n8n Data Table
+„Dopyty - Dobrá Partia", Discord notifikáciu a JSON odpoveď. Nahrádza ho
+`POST /api/dopyt`, ktoré robí to isté lokálne:
+
+1. Validácia povinných polí (`meno`, `telefon`, `adresa`, `sluzba`) → 400
+2. Insert do Postgres — nový Prisma model `Dopyt` s rovnakými stĺpcami ako
+   n8n Data Table: `meno, telefon, email, adresa, lat, lon, sluzba, popis,
+   stav (default "novy"), vybavene (default false), createdAt, updatedAt`
+3. Discord notifikácia cez `DISCORD_WEBHOOK` (identický formát správy ako n8n:
+   🔔 NOVÝ DOPYT z webu, meno/telefón/e-mail/adresa/služba/popis, Google Maps
+   link z lat/lon, čas) — zlyhanie Discordu nesmie zhodiť request
+4. Response zhodná s n8n: `{ success: true, message: "Dopyt bol prijatý" }`,
+   pri chybe 500 `{ success: false, message: "Chyba pri spracovaní" }`
+
+Formulár posiela rovnaký payload ako doteraz, len na `/api/dopyt` namiesto
+n8n URL. Starý n8n workflow sa po nasadení môže deaktivovať.
 
 ## Stránky
 
 - `/` — port `index.html`: hero, služby, referencie carousel, galéria realizácií
   s modalom a tag filtrami, kontaktný formulár (Nominatim vyhľadávanie adries,
-  Leaflet mapa, POST na n8n webhook) + **nová sekcia „Z nášho blogu"**
+  Leaflet mapa, POST na `/api/dopyt`) + **nová sekcia „Z nášho blogu"**
   s 3 najnovšími publikovanými článkami, umiestnená pred kontaktným formulárom
 - `/blog` — zoznam publikovaných článkov (karta: obrázok, titulok, perex, dátum)
 - `/blog/[slug]` — detail článku, HTML obsah, OG meta per článok
