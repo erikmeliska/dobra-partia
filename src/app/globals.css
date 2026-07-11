@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --navy: #1e3a5f;
+    --teal: #5bb7b4;
+    --terracotta: #c47152;
+    --sand: #f9f7f2;
+}
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--sand);
+    scroll-behavior: smooth;
+}
+.hero-gradient {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2a4d7d 100%);
+}
+.card-shadow {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+#address-results {
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 100;
+}
+.result-item:hover {
+    background-color: #f3f4f6;
+    cursor: pointer;
+}
+#map {
+    height: 220px;
+    border-radius: 12px;
+    z-index: 1;
+}
+/* Carousel */
+.carousel-slide { min-width: 100%; padding: 0 1rem; box-sizing: border-box; }
+@media (min-width: 768px) { .carousel-slide { min-width: 50%; } }
+@media (min-width: 1024px) { .carousel-slide { min-width: 33.333%; } }
+/* Gallery */
+.gallery-item { cursor: pointer; overflow: hidden; border-radius: 1rem; }
+.gallery-item img { transition: transform 0.3s ease; }
+.gallery-item:hover img { transform: scale(1.05); }
+.tag-btn.active { background-color: var(--teal); color: white; }
+/* Modal thumb */
+.thumb { opacity: 0.5; cursor: pointer; transition: opacity 0.2s; }
+.thumb.active { opacity: 1; outline: 2px solid var(--teal); outline-offset: 2px; }
+.mobile-menu {
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+}
+.mobile-menu.open {
+    transform: translateX(0);
+}
+.form-success {
+    animation: fadeIn 0.5s ease-in-out;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

@@ -4,3 +4,9 @@ n8n-workflow.json
 n8n-sample-data.csv
 .vercel
 .DS_Store
+.superpowers/
+node_modules/
+.next/
+.env
+.env.local
+public/uploads/
