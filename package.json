@@ -8,6 +8,7 @@
     "dev:web": "npm run dev -w dobra-partia-web",
     "dev:app": "npm run dev -w dobra-partia-app",
     "build:web": "npm run build -w dobra-partia-web",
-    "build:app": "npm run build -w dobra-partia-app"
+    "build:app": "npm run build -w dobra-partia-app",
+    "seed": "node --env-file=packages/db/.env packages/db/seed.js"
   }
 }

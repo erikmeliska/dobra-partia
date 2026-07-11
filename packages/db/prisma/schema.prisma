@@ -50,4 +50,155 @@ model Dopyt {
   vybavene  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  partiaId  String?
+  partia    Partia?  @relation(fields: [partiaId], references: [id])
+  zakazka   Zakazka?
+}
+
+model Partia {
+  id         String   @id @default(cuid())
+  nazov      String
+  slug       String   @unique
+  createdAt  DateTime @default(now())
+  uzivatelia Uzivatel[]
+  zakaznici  Zakaznik[]
+  zakazky    Zakazka[]
+  doklady    Doklad[]
+  polozky    NakladovaPolozka[]
+  media      Media[]
+  referencie Referencia[]
+  dopyty     Dopyt[]
+}
+
+model Uzivatel {
+  id            String   @id @default(cuid())
+  partiaId      String
+  partia        Partia   @relation(fields: [partiaId], references: [id])
+  meno          String
+  email         String   @unique
+  telefon       String   @default("")
+  passwordHash  String
+  createdAt     DateTime @default(now())
+  subscriptions PushSubscription[]
+}
+
+model PushSubscription {
+  id         String   @id @default(cuid())
+  uzivatelId String
+  uzivatel   Uzivatel @relation(fields: [uzivatelId], references: [id], onDelete: Cascade)
+  endpoint   String   @unique
+  p256dh     String
+  auth       String
+  createdAt  DateTime @default(now())
+}
+
+model Zakaznik {
+  id        String   @id @default(cuid())
+  partiaId  String
+  partia    Partia   @relation(fields: [partiaId], references: [id])
+  typ       String   @default("domacnost") // domacnost | firma | spravca | realitka
+  meno      String
+  telefon   String   @default("")
+  email     String   @default("")
+  adresa    String   @default("")
+  lat       Float?
+  lon       Float?
+  poznamka  String   @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  zakazky   Zakazka[]
+}
+
+model Zakazka {
+  id         String    @id @default(cuid())
+  partiaId   String
+  partia     Partia    @relation(fields: [partiaId], references: [id])
+  zakaznikId String?
+  zakaznik   Zakaznik? @relation(fields: [zakaznikId], references: [id])
+  dopytId    String?   @unique
+  dopyt      Dopyt?    @relation(fields: [dopytId], references: [id])
+  nazov      String
+  sluzba     String
+  stav       String    @default("novy") // novy | nacenene | termin | hotovo | zaplatene
+  adresa     String    @default("")
+  lat        Float?
+  lon        Float?
+  termin     DateTime?
+  cena       Decimal?  @db.Decimal(10, 2)
+  poznamka   String    @default("")
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  doklady    Doklad[]
+  polozky    NakladovaPolozka[]
+  media      Media[]
+}
+
+model Doklad {
+  id        String    @id @default(cuid())
+  partiaId  String
+  partia    Partia    @relation(fields: [partiaId], references: [id])
+  zakazkaId String?
+  zakazka   Zakazka?  @relation(fields: [zakazkaId], references: [id])
+  typ       String    @default("blocek") // blocek | faktura | ine
+  stav      String    @default("inbox")  // inbox | spracovany | priradeny
+  fotoUrl   String    @default("")
+  qrData    String    @default("")
+  ekasaRaw  Json?
+  predajca  String    @default("")
+  suma      Decimal?  @db.Decimal(10, 2)
+  datum     DateTime?
+  createdAt DateTime  @default(now())
+  polozky   NakladovaPolozka[]
+}
+
+model NakladovaPolozka {
+  id             String   @id @default(cuid())
+  partiaId       String
+  partia         Partia   @relation(fields: [partiaId], references: [id])
+  dokladId       String?
+  doklad         Doklad?  @relation(fields: [dokladId], references: [id])
+  zakazkaId      String?
+  zakazka        Zakazka? @relation(fields: [zakazkaId], references: [id])
+  nazov          String
+  mnozstvo       Decimal  @default(1) @db.Decimal(10, 3)
+  jednotkovaCena Decimal? @db.Decimal(10, 2)
+  suma           Decimal  @db.Decimal(10, 2)
+  kategoria      String   @default("material") // material | phm | prenajom | skladkovne | rezia
+  createdAt      DateTime @default(now())
+}
+
+model Media {
+  id                 String      @id @default(cuid())
+  partiaId           String
+  partia             Partia      @relation(fields: [partiaId], references: [id])
+  zakazkaId          String?
+  zakazka            Zakazka?    @relation(fields: [zakazkaId], references: [id])
+  referenciaId       String?
+  referencia         Referencia? @relation(fields: [referenciaId], references: [id])
+  url                String
+  alt                String      @default("")
+  typ                String      @default("ine") // pred | po | blocek | ine
+  suhlasPublikovanie String      @default("nie") // nie | anonymne | s_menom
+  poradie            Int         @default(0)
+  createdAt          DateTime    @default(now())
+}
+
+model Referencia {
+  id         String   @id @default(cuid())
+  partiaId   String
+  partia     Partia   @relation(fields: [partiaId], references: [id])
+  typ        String // testimonial | projekt
+  text       String   @default("") // testimonial
+  autor      String   @default("")
+  hviezdicky Int?
+  nazov      String   @default("") // projekt
+  popis      String   @default("")
+  datum      String   @default("") // "2026-03"
+  lokalita   String   @default("")
+  sluzba     String   @default("")
+  tagy       String[] @default([])
+  poradie    Int      @default(0)
+  published  Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  fotky      Media[]
 }
