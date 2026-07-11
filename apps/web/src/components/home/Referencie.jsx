@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import refData from '@/data/references-data.json'
 
 function getSlidesPerView() {
   if (window.innerWidth >= 1024) return 3
@@ -9,10 +8,9 @@ function getSlidesPerView() {
   return 1
 }
 
-export default function Referencie() {
+export default function Referencie({ testimonials }) {
   const [index, setIndex] = useState(0)
   const [slidesPerView, setSlidesPerView] = useState(1)
-  const testimonials = refData.testimonials
 
   useEffect(() => {
     const update = () => {

@@ -7,13 +7,17 @@ import Galeria from '@/components/home/Galeria'
 import BlogSekcia from '@/components/home/BlogSekcia'
 import KontaktForm from '@/components/home/KontaktForm'
 import { getPublishedPosts } from '@/lib/blog'
+import { getReferencieData } from '@/lib/referencie'
 
 export const metadata = {
   alternates: { canonical: 'https://www.dobrapartia.sk/' },
 }
 
+export const revalidate = 3600
+
 export default async function HomePage() {
   const posts = await getPublishedPosts(3)
+  const refData = await getReferencieData()
 
   return (
     <main>
@@ -21,8 +25,8 @@ export default async function HomePage() {
       <Sluzby />
       <PreFirmy />
       <AkoPracujeme />
-      <Referencie />
-      <Galeria />
+      <Referencie testimonials={refData.testimonials} />
+      <Galeria projects={refData.projects} tags={refData.tags} />
       <BlogSekcia posts={posts} />
       <KontaktForm />
     </main>

@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import refData from '@/data/references-data.json'
 
 const MONTHS = ['január', 'február', 'marec', 'apríl', 'máj', 'jún', 'júl', 'august', 'september', 'október', 'november', 'december']
 
@@ -14,12 +13,12 @@ function photoSrc(src) {
   return src.startsWith('assets/') ? '/' + src : src
 }
 
-export default function Galeria() {
+export default function Galeria({ projects, tags }) {
   const [activeTag, setActiveTag] = useState('all')
   const [modalProject, setModalProject] = useState(null)
   const [activePhoto, setActivePhoto] = useState(0)
 
-  const filtered = refData.projects.filter(
+  const filtered = projects.filter(
     p => activeTag === 'all' || p.tags.includes(activeTag)
   )
 
@@ -47,7 +46,7 @@ export default function Galeria() {
         </div>
 
         <div className="flex flex-wrap justify-center gap-2 mb-10">
-          {[['all', 'Všetky'], ...Object.entries(refData.tags)].map(([key, label]) => (
+          {[['all', 'Všetky'], ...Object.entries(tags)].map(([key, label]) => (
             <button
               key={key}
               onClick={() => setActiveTag(key)}
@@ -81,7 +80,7 @@ export default function Galeria() {
                   <div className="flex flex-wrap gap-1 mt-2">
                     {project.tags.map(t => (
                       <span key={t} className="text-xs bg-white/20 text-white px-2 py-0.5 rounded-full">
-                        {refData.tags[t] || t}
+                        {tags[t] || t}
                       </span>
                     ))}
                   </div>
@@ -147,7 +146,7 @@ export default function Galeria() {
                 <div className="flex flex-wrap gap-2 mb-3">
                   {modalProject.tags.map(t => (
                     <span key={t} className="text-xs font-medium px-3 py-1 rounded-full bg-teal/10 text-teal">
-                      {refData.tags[t] || t}
+                      {tags[t] || t}
                     </span>
                   ))}
                 </div>
