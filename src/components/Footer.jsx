@@ -15,7 +15,8 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed">
-              Kompletný servis pre váš domov a záhradu v Košickom kraji.
+              Kompletný servis pre domácnosti, firmy a bytové domy. Košice a
+              okolie, plánované služby aj v Prešove.
             </p>
           </div>
           <div>
@@ -61,6 +62,11 @@ export default function Footer() {
                 </a>
               </li>
               <li>
+                <a href="/#pre-firmy" className="hover:text-white transition">
+                  Pre firmy a správcov
+                </a>
+              </li>
+              <li>
                 <a href="/#referencie" className="hover:text-white transition">
                   Referencie
                 </a>
@@ -103,7 +109,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <i className="fas fa-map-marker-alt text-teal text-xs"></i>
-                Košický kraj
+                Košice a okolie · Prešov
               </li>
             </ul>
           </div>

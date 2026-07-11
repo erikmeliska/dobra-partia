@@ -62,7 +62,8 @@ export default function AkoPracujeme() {
             </div>
             <h3 className="font-bold text-navy mb-2">Spokojnosť</h3>
             <p className="text-gray-500 text-sm">
-              Platíte až keď ste spokojní. A my vieme, že budete.
+              Platíte až keď ste spokojní — faktúru vystavíme na mieste v deň
+              ukončenia práce.
             </p>
           </div>
         </div>

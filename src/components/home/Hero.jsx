@@ -4,22 +4,42 @@ export default function Hero() {
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12">
         <div className="md:w-1/2 space-y-6 z-10">
           <div className="inline-block bg-teal/20 text-teal-300 px-4 py-1 rounded-full text-sm font-bold tracking-wider uppercase">
-            Špecialisti pre Košický kraj
+            Košice a okolie · Prešov
           </div>
           <h1 className="text-4xl md:text-6xl font-extrabold leading-tight">
             Váš domov aj záhrada <br />
             <span className="text-teal">v absolútnej pohode.</span>
           </h1>
           <p className="text-lg text-blue-100 max-w-lg">
-            Sme partia šikovných chlapov z Východu. Rozumieme strojom,
-            lopatám aj technológiám. Pôsobíme v celom Košickom kraji.
+            Sme partia šikovných chlapov z Východu. Jedna partia na všetko —
+            dom, záhradu aj firmu. Jednorazovo alebo pravidelne na paušál.
           </p>
+          <ul className="space-y-2 text-blue-100">
+            <li className="flex items-center gap-3">
+              <i className="fas fa-phone-alt text-teal"></i>
+              Ozveme sa do 60 minút
+            </li>
+            <li className="flex items-center gap-3">
+              <i className="fas fa-hand-holding-usd text-teal"></i>
+              Platba až po spokojnosti
+            </li>
+            <li className="flex items-center gap-3">
+              <i className="fas fa-users text-teal"></i>
+              Jedna partia na všetko
+            </li>
+          </ul>
           <div className="flex flex-wrap gap-4 pt-4">
             <a
               href="#kontakt"
               className="bg-teal text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg hover:scale-105 transition transform"
             >
               Chcem cenovú ponuku
+            </a>
+            <a
+              href="#pre-firmy"
+              className="border-2 border-teal text-teal px-8 py-4 rounded-xl font-bold text-lg hover:bg-teal hover:text-white transition"
+            >
+              Pre firmy a správcov
             </a>
           </div>
         </div>

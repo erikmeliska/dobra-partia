@@ -29,6 +29,12 @@ export default function Nav() {
               Služby
             </a>
             <a
+              href="/#pre-firmy"
+              className="text-gray-600 hover:text-teal font-medium transition"
+            >
+              Pre firmy
+            </a>
+            <a
               href="/#ako-pracujeme"
               className="text-gray-600 hover:text-teal font-medium transition"
             >
@@ -88,6 +94,13 @@ export default function Nav() {
             onClick={() => setMenuOpen(false)}
           >
             Služby
+          </a>
+          <a
+            href="/#pre-firmy"
+            className="text-gray-700 font-medium text-lg"
+            onClick={() => setMenuOpen(false)}
+          >
+            Pre firmy
           </a>
           <a
             href="/#ako-pracujeme"

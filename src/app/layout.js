@@ -6,13 +6,13 @@ export const metadata = {
   metadataBase: new URL('https://www.dobrapartia.sk'),
   title: 'Dobrá Partia | Váš domov v pohode',
   description:
-    'Dobrá Partia - kompletný servis pre váš domov a záhradu v Košickom kraji. Záhradné práce, bazénový servis, hodinový majster a viac.',
+    'Dobrá Partia - servis pre domácnosti, firmy a bytové domy v Košiciach a okolí. Kosenie a záhrady, bazénový servis, zimná údržba, hodinový majster, vypratávanie. Ozveme sa do 60 minút.',
   icons: { icon: '/assets/favicon.ico' },
   openGraph: {
     url: 'https://www.dobrapartia.sk/',
     title: 'Dobrá Partia | Váš domov v pohode',
     description:
-      'Kompletný servis pre váš domov a záhradu v Košickom kraji. Záhradné práce, bazénový servis, hodinový majster a viac.',
+      'Servis pre domácnosti, firmy a bytové domy v Košiciach a okolí. Kosenie a záhrady, bazénový servis, zimná údržba, hodinový majster, vypratávanie. Ozveme sa do 60 minút.',
     images: ['https://www.dobrapartia.sk/assets/hero-logo.jpg'],
     type: 'website',
     locale: 'sk_SK',
@@ -20,7 +20,8 @@ export const metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Dobrá Partia | Váš domov v pohode',
-    description: 'Kompletný servis pre váš domov a záhradu v Košickom kraji.',
+    description:
+      'Servis pre domácnosti, firmy a bytové domy v Košiciach a okolí. Ozveme sa do 60 minút.',
     images: ['https://www.dobrapartia.sk/assets/hero-logo.jpg'],
   },
 }

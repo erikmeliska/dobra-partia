@@ -115,7 +115,8 @@ export default function KontaktForm() {
                   <i className="fas fa-map-marker-alt"></i>
                 </div>
                 <p className="font-medium text-sm">
-                  Košický kraj<br />(KE, KS, MI, TV, SN, RV, GL, SO)
+                  Košice a okolie — všetky služby<br />
+                  Prešov — plánované služby
                 </p>
               </div>
               <div className="flex items-center gap-4">

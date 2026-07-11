@@ -6,8 +6,9 @@ export default function Sluzby() {
           Kompletný servis pre váš domov
         </h2>
         <p className="text-gray-500 max-w-2xl mx-auto text-lg">
-          Od Košíc po Sobrance, od Rožňavy po Trebišov. Prídeme všade tam,
-          kde nás potrebujete.
+          V Košiciach a okolí do 20 minút sme k dispozícii so všetkým —
+          vrátane pohotovosti. V Prešove zabezpečujeme plánované služby:
+          paušály, areály, bazény.
         </p>
         <div className="w-24 h-1 bg-teal mx-auto mt-6"></div>
       </div>
@@ -21,7 +22,8 @@ export default function Sluzby() {
           </h3>
           <p className="text-gray-600 mb-4">
             Kosenie, vertikutácia, strihanie živých plotov a zakladanie
-            trávnikov.
+            trávnikov. Pravidelné kosenie aj ako sezónny paušál — každé dva
+            týždne bez starostí.
           </p>
         </div>
         <div className="service-card bg-white p-8 rounded-3xl card-shadow border-b-4 border-blue-400 transition-all duration-300">
@@ -32,8 +34,8 @@ export default function Sluzby() {
             Bazénový servis
           </h3>
           <p className="text-gray-600 mb-4">
-            Kompletná príprava na sezónu, zazimovanie a pravidelná údržba
-            vody.
+            Ročný balík: otvorenie bazéna, letná údržba vody a zazimovanie.
+            Slúžime domácnostiam aj hotelom a penziónom.
           </p>
         </div>
         <div className="service-card bg-white p-8 rounded-3xl card-shadow border-b-4 border-slate-300 transition-all duration-300">
@@ -44,8 +46,8 @@ export default function Sluzby() {
             Zimná pohotovosť
           </h3>
           <p className="text-gray-600 mb-4">
-            Odpratávanie snehu z chodníkov a príjazdových ciest, keď Košice
-            zafúka.
+            Odpratávanie snehu z chodníkov a príjazdových ciest. Pre firmy a
+            bytovky mesačný paušál s pohotovosťou — v Košiciach a okolí.
           </p>
         </div>
         <div className="service-card bg-white p-8 rounded-3xl card-shadow border-b-4 border-terracotta transition-all duration-300">
@@ -57,6 +59,7 @@ export default function Sluzby() {
           </h3>
           <p className="text-gray-600 mb-4">
             Drobné opravy, vŕtanie, montáž nábytku a inštalácia spotrebičov.
+            Celoročne pre domácnosti aj firmy na rámcovú zmluvu.
           </p>
         </div>
         <div className="service-card bg-white p-8 rounded-3xl card-shadow border-b-4 border-amber-600 transition-all duration-300">
@@ -68,7 +71,8 @@ export default function Sluzby() {
           </h3>
           <p className="text-gray-600 mb-4">
             Odvoz starého nábytku na zberný dvor, vypratávanie garáží a
-            pivníc.
+            pivníc. Pre realitky kompletná obrátka bytu — vypratať, opraviť,
+            vyčistiť.
           </p>
         </div>
         <div className="service-card bg-white p-8 rounded-3xl card-shadow border-b-4 border-navy transition-all duration-300">
