@@ -3,6 +3,7 @@ import Sluzby from '@/components/home/Sluzby'
 import AkoPracujeme from '@/components/home/AkoPracujeme'
 import Referencie from '@/components/home/Referencie'
 import Galeria from '@/components/home/Galeria'
+import KontaktForm from '@/components/home/KontaktForm'
 
 export default function HomePage() {
   return (
@@ -12,6 +13,7 @@ export default function HomePage() {
       <AkoPracujeme />
       <Referencie />
       <Galeria />
+      <KontaktForm />
     </main>
   )
 }
