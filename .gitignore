@@ -3,3 +3,5 @@ node_modules/
 .env
 .env.*
 packages/db/generated/
+.vercel/
+.DS_Store
