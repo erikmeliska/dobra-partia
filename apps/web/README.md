@@ -6,11 +6,18 @@ Webová stránka pre firmu **Dobrá Partia s.r.o.** — Next.js (App Router) apl
 Pôvodná statická HTML verzia bola premigrovaná na Next.js s Postgres databázou,
 blogom cez WordPress-kompatibilné API a spracovaním dopytov cez Server Action.
 
+> **Pozn.:** tento web je odteraz `apps/web` v [monorepe](../../README.md). Operačná appka
+> firmy (login, inbox dopytov, push notifikácie) žije samostatne v `apps/app` a nasadzuje sa
+> na `app.dobrapartia.sk`. Prisma schéma sa presunula do zdieľaného `packages/db` — obe appky
+> nad ňou pristupujú k tej istej databáze. Referencie a galéria už nie sú v
+> `data/references-data.json` (súbor bol zmazaný), ale v DB (`Referencia` + `Media`).
+
 ## Technológie
 
 - **Next.js 16** (App Router, React 19, Server Actions)
 - **Tailwind CSS 3**
-- **Prisma 6** + **PostgreSQL** (lokálne Docker, produkcia Prisma Postgres na Verceli)
+- **Prisma 6** + **PostgreSQL** (lokálne Docker, produkcia Prisma Postgres na Verceli) — schéma
+  a klient v zdieľanom workspace `packages/db`
 - **Leaflet.js** + OpenStreetMap **Nominatim** (geocoding v kontaktnom formulári)
 - **@vercel/blob** (úložisko obrázkov blogu na produkcii)
 - Deploy: **Vercel**
@@ -18,7 +25,7 @@ blogom cez WordPress-kompatibilné API a spracovaním dopytov cez Server Action.
 ## Štruktúra
 
 ```
-web/
+apps/web/
 ├── src/
 │   ├── app/
 │   │   ├── layout.js                # Root layout (Nav, Footer, meta)
@@ -44,20 +51,23 @@ web/
 │   │   ├── Nav.jsx, Footer.jsx
 │   │   └── home/                     # Hero, Sluzby, PreFirmy, AkoPracujeme,
 │   │                                 #   Referencie, Galeria, BlogSekcia, KontaktForm
-│   ├── data/
-│   │   └── references-data.json      # Referencie + realizácie (fotky, tagy)
 │   └── lib/
-│       ├── prisma.js                 # Prisma client singleton
-│       ├── dopyt.js                  # createDopyt() — DB + Discord
+│       ├── prisma.js                 # Prisma client (re-export z @dobra-partia/db)
+│       ├── dopyt.js                  # createDopyt() — DB + Discord + notifikácia appky
 │       ├── discord.js                # Discord webhook notifikácie
+│       ├── notify-app.js             # notifyAppNovyDopyt() — interné volanie do apps/app
 │       ├── blog.js                   # čítanie blog postov
+│       ├── referencie.js             # čítanie referencií a galérie z DB
 │       └── wp-auth.js                # Basic auth pre WP API + /api/dopyt
-├── prisma/
-│   └── schema.prisma                # BlogPost, MediaUpload, BlogCategory, Dopyt
 ├── public/
 │   └── assets/                       # logo, favicon, hero, mapa, references/
 └── next.config.mjs                  # redirecty *.html → clean URL
 ```
+
+Prisma schéma (`BlogPost`, `MediaUpload`, `BlogCategory`, `Dopyt` a operačné modely appky) žije
+v zdieľanom workspace [`packages/db`](../../packages/db) — pozri [root README](../../README.md).
+Referencie a galéria sa čítajú z DB (`Referencia` + `Media`), pôvodný
+`src/data/references-data.json` bol po importe zmazaný.
 
 ## Funkcie
 
