@@ -8,6 +8,10 @@ import BlogSekcia from '@/components/home/BlogSekcia'
 import KontaktForm from '@/components/home/KontaktForm'
 import { getPublishedPosts } from '@/lib/blog'
 
+export const metadata = {
+  alternates: { canonical: 'https://www.dobrapartia.sk/' },
+}
+
 export default async function HomePage() {
   const posts = await getPublishedPosts(3)
 

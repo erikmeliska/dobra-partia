@@ -78,6 +78,7 @@ export default function KontaktForm() {
       lon: latLon?.lon || '',
       sluzba: formData.get('sluzba'),
       popis: formData.get('popis') || '',
+      web: formData.get('web') || '',
       odoslane: new Date().toISOString(),
       zdroj: 'web-formular',
     }
@@ -142,6 +143,14 @@ export default function KontaktForm() {
           <div className="p-8 md:p-12 md:w-3/5">
             {status !== 'success' && (
               <form className="space-y-5" id="quote-form" onSubmit={onSubmit}>
+                <input
+                  type="text"
+                  name="web"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  className="hidden"
+                  aria-hidden="true"
+                />
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div>
                     <label className="block text-xs font-bold uppercase text-gray-400 mb-2">

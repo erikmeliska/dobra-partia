@@ -1,6 +1,9 @@
 export async function sendDiscordMessage(content) {
   const webhookUrl = process.env.DISCORD_WEBHOOK_URL
-  if (!webhookUrl) return
+  if (!webhookUrl) {
+    console.warn('DISCORD_WEBHOOK_URL not set — Discord notification skipped')
+    return
+  }
 
   try {
     await fetch(webhookUrl, {

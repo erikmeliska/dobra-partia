@@ -4,17 +4,18 @@ import { verifyWpAuth } from '@/lib/wp-auth'
 
 async function uploadLocal(file, buffer) {
   const { writeFile, mkdir } = await import('fs/promises')
-  const { join } = await import('path')
+  const { join, basename } = await import('path')
   const uploadsDir = join(process.cwd(), 'public', 'uploads')
   await mkdir(uploadsDir, { recursive: true })
-  const filename = `${Date.now()}-${file.name || 'image.jpg'}`
+  const filename = `${Date.now()}-${basename(file.name || 'image.jpg')}`
   await writeFile(join(uploadsDir, filename), buffer)
   return { filename, url: `/uploads/${filename}` }
 }
 
 async function uploadBlob(file, buffer) {
   const { put } = await import('@vercel/blob')
-  const filename = `${Date.now()}-${file.name || 'image.jpg'}`
+  const { basename } = await import('path')
+  const filename = `${Date.now()}-${basename(file.name || 'image.jpg')}`
   const blob = await put(filename, buffer, { access: 'public' })
   return { filename, url: blob.url }
 }

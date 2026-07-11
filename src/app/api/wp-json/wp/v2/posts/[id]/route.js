@@ -34,6 +34,12 @@ export async function GET(request, { params }) {
 
   const { id } = await params
   const wpId = parseInt(id, 10)
+  if (Number.isNaN(wpId)) {
+    return NextResponse.json(
+      { code: 'rest_post_invalid_id', message: 'Invalid post ID.' },
+      { status: 404 }
+    )
+  }
 
   const post = await prisma.blogPost.findUnique({ where: { wpId } })
   if (!post) {
@@ -53,6 +59,12 @@ export async function PUT(request, { params }) {
 
   const { id } = await params
   const wpId = parseInt(id, 10)
+  if (Number.isNaN(wpId)) {
+    return NextResponse.json(
+      { code: 'rest_post_invalid_id', message: 'Invalid post ID.' },
+      { status: 404 }
+    )
+  }
 
   try {
     const body = await request.json()
@@ -97,7 +109,7 @@ export async function PUT(request, { params }) {
     if (body.title !== undefined) data.title = body.title
     if (body.content !== undefined) data.text = body.content
     if (body.excerpt !== undefined) data.perex = body.excerpt
-    if (body.slug !== undefined) data.slug = body.slug
+    if (body.slug !== undefined) data.slug = slugify(body.slug)
     if (body.status !== undefined) {
       data.status = body.status
       data.published = body.status === 'publish'
@@ -113,8 +125,17 @@ export async function PUT(request, { params }) {
     revalidatePath('/blog')
     revalidatePath('/sitemap.xml')
     revalidatePath(`/blog/${post.slug}`)
+    if (existing.slug !== post.slug) {
+      revalidatePath(`/blog/${existing.slug}`)
+    }
     return NextResponse.json(toWpResponse(post))
   } catch (error) {
+    if (error.code === 'P2002') {
+      return NextResponse.json(
+        { code: 'rest_duplicate', message: 'A post with this slug already exists.' },
+        { status: 409 }
+      )
+    }
     console.error('WP update post error:', error)
     return NextResponse.json(
       { code: 'rest_error', message: 'Failed to update post' },
@@ -130,6 +151,12 @@ export async function DELETE(request, { params }) {
 
   const { id } = await params
   const wpId = parseInt(id, 10)
+  if (Number.isNaN(wpId)) {
+    return NextResponse.json(
+      { code: 'rest_post_invalid_id', message: 'Invalid post ID.' },
+      { status: 404 }
+    )
+  }
 
   const existing = await prisma.blogPost.findUnique({ where: { wpId } })
   if (!existing) {
