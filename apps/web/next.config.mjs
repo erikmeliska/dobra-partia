@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  serverExternalPackages: ['@dobra-partia/db'],
   async redirects() {
     return [
       { source: '/index.html', destination: '/', permanent: true },

@@ -4,17 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev --port 3457",
-    "build": "prisma generate && prisma db push --skip-generate && next build",
-    "postinstall": "prisma generate",
+    "build": "npm run push -w @dobra-partia/db && next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
-    "@prisma/client": "^6.19.3",
+    "@dobra-partia/db": "*",
     "@vercel/blob": "^2.6.1",
     "leaflet": "^1.9.4",
     "next": "^16.2.10",
-    "prisma": "^6.19.3",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"
   },

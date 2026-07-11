@@ -4,6 +4,7 @@
   "private": true,
   "workspaces": ["apps/*", "packages/*"],
   "scripts": {
+    "postinstall": "npm run generate -w @dobra-partia/db",
     "dev:web": "npm run dev -w dobra-partia-web",
     "dev:app": "npm run dev -w dobra-partia-app",
     "build:web": "npm run build -w dobra-partia-web",
