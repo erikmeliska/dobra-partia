@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model BlogPost {
+  id        String   @id @default(cuid())
+  wpId      Int      @unique
+  title     String
+  slug      String   @unique
+  perex     String
+  text      String
+  image     String   @default("")
+  status    String   @default("draft")
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model MediaUpload {
+  id        Int      @id @default(autoincrement())
+  filename  String
+  url       String
+  createdAt DateTime @default(now())
+}
+
+model BlogCategory {
+  id   Int    @id @default(autoincrement())
+  name String
+  slug String @unique
+}
+
+// Náhrada za n8n Data Table "Dopyty - Dobrá Partia" — rovnaké stĺpce
+model Dopyt {
+  id        String   @id @default(cuid())
+  meno      String
+  telefon   String
+  email     String   @default("")
+  adresa    String
+  lat       Float?
+  lon       Float?
+  sluzba    String
+  popis     String   @default("")
+  stav      String   @default("novy")
+  vybavene  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
