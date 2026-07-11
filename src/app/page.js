@@ -4,9 +4,13 @@ import PreFirmy from '@/components/home/PreFirmy'
 import AkoPracujeme from '@/components/home/AkoPracujeme'
 import Referencie from '@/components/home/Referencie'
 import Galeria from '@/components/home/Galeria'
+import BlogSekcia from '@/components/home/BlogSekcia'
 import KontaktForm from '@/components/home/KontaktForm'
+import { getPublishedPosts } from '@/lib/blog'
 
-export default function HomePage() {
+export default async function HomePage() {
+  const posts = await getPublishedPosts(3)
+
   return (
     <main>
       <Hero />
@@ -15,6 +19,7 @@ export default function HomePage() {
       <AkoPracujeme />
       <Referencie />
       <Galeria />
+      <BlogSekcia posts={posts} />
       <KontaktForm />
     </main>
   )
