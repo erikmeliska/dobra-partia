@@ -66,7 +66,7 @@ Každý workspace má vlastný `.env`: `apps/web/.env`, `apps/app/.env`, `packag
 | `VAPID_PRIVATE_KEY` | | ✓ | | privátny VAPID kľúč pre web push (server-side) |
 | `VAPID_SUBJECT` | | ✓ | | `mailto:` kontakt požadovaný web push štandardom |
 | `GOOGLE_API_KEY` | | ✓ | | Gemini (BAML) — OCR fallback pre bločky bez QR |
-| `BLOB_STORE_ID` | | ✓ | | Vercel Blob store (`dobra-partia-app-blob`) — fotky bločkov; na Verceli auth cez OIDC, lokálne treba `BLOB_READ_WRITE_TOKEN` z dashboardu store |
+| `BLOB_READ_WRITE_TOKEN` | | ✓ | | Vercel Blob store `dobra-partia-app-blob` (**private**) — fotky bločkov; pridáva ho store connect (Prod+Preview+Dev), lokálne je v `.env.local`. Fotky servuje autorizovaná proxy `/api/doklady/[id]/foto` |
 
 `packages/db/.env` slúži pre skripty spúšťané priamo v `packages/db` (seed, import), preto obsahuje
 len `DATABASE_URL` a WP/Discord premenné zdieľané so seed dátami — samostatný `.env` tam v
