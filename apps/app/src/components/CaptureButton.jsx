@@ -30,9 +30,13 @@ export default function CaptureButton() {
     await obnovPocet()
     if (r.odoslane > 0) {
       setSprava(`Odoslané: ${r.odoslane} ✓`)
-      setTimeout(() => setSprava(''), 3000)
       router.refresh()
+    } else if (!r.preskocene && r.zostava > 0) {
+      setSprava('Odoslanie zlyhalo — skúsim neskôr')
+    } else if (!r.preskocene) {
+      setSprava('')
     }
+    if (r.odoslane > 0 || r.zostava > 0) setTimeout(() => setSprava(''), 3000)
   }
 
   useEffect(() => {

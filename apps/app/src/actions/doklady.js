@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { del } from '@vercel/blob'
 import prisma from '@dobra-partia/db'
 import { auth } from '@/auth'
 import { spracujDoklad } from '@/lib/pipeline'
@@ -31,14 +32,16 @@ export async function upravDoklad(id, hodnoty) {
   if (!v.ok) throw new Error(v.chyba)
   await prisma.doklad.update({
     where: { id },
-    data: { ...v.data, stav: 'spracovany' }, // overenie ostáva 'nic'
+    // ručný zásah = dáta už nie sú autoritatívne z eKasa
+    data: { ...v.data, stav: 'spracovany', overenie: 'nic' },
   })
   revalidatePath(`/doklady/${id}`)
   revalidatePath('/doklady')
 }
 
 export async function zmazDoklad(id) {
-  await najdiVlastny(id)
+  const doklad = await najdiVlastny(id)
+  if (doklad.fotoUrl) await del(doklad.fotoUrl).catch(() => {})
   await prisma.$transaction([
     prisma.nakladovaPolozka.deleteMany({ where: { dokladId: id } }),
     prisma.doklad.delete({ where: { id } }),

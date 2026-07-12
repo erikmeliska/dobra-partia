@@ -5,6 +5,8 @@ import { auth } from '@/auth'
 import { decodeQrZBuffra } from '../../../lib/qr-server'
 import { spracujDoklad } from '../../../lib/pipeline'
 
+export const maxDuration = 60
+
 export async function POST(request) {
   const session = await auth()
   if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
