@@ -13,7 +13,7 @@ export default function DokladKarta({ doklad }) {
     <Link href={`/doklady/${doklad.id}`} className="flex gap-3 rounded-2xl bg-white p-3 shadow-sm">
       {doklad.fotoUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={doklad.fotoUrl} alt="" className="h-16 w-16 shrink-0 rounded-xl object-cover" />
+        <img src={`/api/doklady/${doklad.id}/foto`} alt="" className="h-16 w-16 shrink-0 rounded-xl object-cover" />
       ) : (
         <div className="h-16 w-16 shrink-0 rounded-xl bg-sand" />
       )}

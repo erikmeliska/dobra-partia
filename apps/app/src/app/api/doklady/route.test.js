@@ -5,7 +5,11 @@ const { mockDb } = vi.hoisted(() => ({
 }))
 vi.mock('@dobra-partia/db', () => ({ default: mockDb }))
 vi.mock('@/auth', () => ({ auth: vi.fn() }))
-vi.mock('@vercel/blob', () => ({ put: vi.fn(async () => ({ url: 'https://blob/x.jpg' })) }))
+vi.mock('@vercel/blob', () => ({
+  put: vi.fn(async () => ({ url: 'https://blob/x.jpg' })),
+  get: vi.fn(),
+  del: vi.fn(),
+}))
 vi.mock('../../../lib/qr-server', () => ({ decodeQrZBuffra: vi.fn(async () => null) }))
 vi.mock('../../../lib/pipeline', () => ({
   spracujDoklad: vi.fn(async () => ({ id: 'd1', stav: 'spracovany' })),

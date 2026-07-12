@@ -38,9 +38,9 @@ export default function DokladDetail({ doklad }) {
       {chyba && <p className="rounded-xl bg-terracotta/10 p-3 text-terracotta">{chyba}</p>}
 
       {doklad.fotoUrl && (
-        <a href={doklad.fotoUrl} target="_blank" rel="noreferrer">
+        <a href={`/api/doklady/${doklad.id}/foto`} target="_blank" rel="noreferrer">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={doklad.fotoUrl} alt="Fotka bločku" className="max-h-72 w-full rounded-2xl object-contain bg-white" />
+          <img src={`/api/doklady/${doklad.id}/foto`} alt="Fotka bločku" className="max-h-72 w-full rounded-2xl object-contain bg-white" />
         </a>
       )}
 

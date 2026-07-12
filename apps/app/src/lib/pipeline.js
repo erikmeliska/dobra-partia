@@ -1,4 +1,4 @@
-import { del } from '@vercel/blob'
+import { del, get } from '@vercel/blob'
 import prisma from '@dobra-partia/db'
 import { fetchReceipt } from './ekasa'
 import { mapEkasaReceipt, mapOcrReceipt } from './doklady'
@@ -18,10 +18,11 @@ async function ulozVysledok(doklad, { doklad: polia, polozky }) {
 async function stiahniFotku(fotoUrl) {
   if (!fotoUrl) return null
   try {
-    const res = await fetch(fotoUrl)
-    if (!res.ok) return null
-    const mimeType = res.headers.get('content-type') || 'image/jpeg'
-    return { buffer: Buffer.from(await res.arrayBuffer()), mimeType }
+    const blob = await get(fotoUrl, { access: 'private' })
+    if (!blob?.stream) return null
+    const mimeType = blob.blob.contentType || 'image/jpeg'
+    const buffer = Buffer.from(await new Response(blob.stream).arrayBuffer())
+    return { buffer, mimeType }
   } catch {
     return null
   }

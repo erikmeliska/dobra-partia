@@ -28,7 +28,7 @@ export async function POST(request) {
   }
 
   const blob = await put(`doklady/${partiaId}/${Date.now()}.jpg`, buffer, {
-    access: 'public',
+    access: 'private',
     addRandomSuffix: true,
     contentType: foto.type || 'image/jpeg',
   })
