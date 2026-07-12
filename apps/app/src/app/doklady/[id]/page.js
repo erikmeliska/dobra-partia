@@ -22,6 +22,7 @@ export default async function DokladDetailPage({ params }) {
           doklad={{
             ...doklad,
             suma: doklad.suma != null ? Number(doklad.suma) : null,
+            datum: doklad.datum ? doklad.datum.toISOString().slice(0, 10) : null,
             polozky: doklad.polozky.map((p) => ({
               id: p.id,
               nazov: p.nazov,

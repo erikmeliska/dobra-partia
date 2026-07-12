@@ -15,6 +15,7 @@ export default function DokladDetail({ doklad }) {
       try {
         await fn()
       } catch (e) {
+        if (typeof e?.digest === 'string' && e.digest.startsWith('NEXT_REDIRECT')) throw e
         setChyba(e?.message || 'Akcia zlyhala')
       }
     })
@@ -26,7 +27,7 @@ export default function DokladDetail({ doklad }) {
         <div>
           <h1 className="text-xl font-bold">{doklad.predajca || 'Neznámy bloček'}</h1>
           <p className="text-sm text-navy/60">
-            {doklad.datum ? new Date(doklad.datum).toLocaleString('sk-SK') : 'bez dátumu'}
+            {doklad.datum ? new Date(doklad.datum).toLocaleDateString('sk-SK') : 'bez dátumu'}
           </p>
         </div>
         <span className="rounded-full bg-white px-3 py-1 text-sm font-bold shadow-sm">
@@ -75,7 +76,7 @@ export default function DokladDetail({ doklad }) {
         >
           <input name="predajca" defaultValue={doklad.predajca} placeholder="Predajca" className="w-full rounded-xl border border-navy/20 p-3" />
           <input name="suma" defaultValue={doklad.suma ?? ''} placeholder="Suma €" inputMode="decimal" className="w-full rounded-xl border border-navy/20 p-3" />
-          <input name="datum" type="date" defaultValue={doklad.datum ? String(doklad.datum).slice(0, 10) : ''} className="w-full rounded-xl border border-navy/20 p-3" />
+          <input name="datum" type="date" defaultValue={doklad.datum || ''} className="w-full rounded-xl border border-navy/20 p-3" />
           <div className="flex gap-2">
             <button type="submit" disabled={pending} className="flex-1 rounded-xl bg-navy p-3 font-bold text-white">Uložiť</button>
             <button type="button" onClick={() => setEditujem(false)} className="rounded-xl bg-sand p-3">Zrušiť</button>
