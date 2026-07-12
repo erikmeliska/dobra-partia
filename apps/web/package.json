@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --port 3457",
+    "dev": "NODE_OPTIONS=--max-old-space-size=4096 next dev --port 3457",
     "build": "node -e \"require('fs').cpSync('../../packages/db/generated/client','generated/client',{recursive:true})\" && next build",
     "start": "next start",
     "lint": "next lint"
