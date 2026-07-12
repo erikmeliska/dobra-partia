@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { mapEkasaReceipt, mapOcrReceipt, parseEkasaDatum } from './doklady'
+import { mapEkasaReceipt, mapOcrReceipt, parseEkasaDatum, validujUpravu } from './doklady'
 import fixture from './fixtures/ekasa-sample.json'
 
 describe('parseEkasaDatum', () => {
@@ -67,5 +67,25 @@ describe('mapOcrReceipt', () => {
     const { doklad, polozky } = mapOcrReceipt({ totalAmount: 3, currency: 'EUR' })
     expect(polozky).toEqual([])
     expect(doklad.datum).toBeNull()
+  })
+})
+
+describe('validujUpravu', () => {
+  it('prijme platné hodnoty a znormalizuje typy', () => {
+    const r = validujUpravu({ predajca: 'Hornbach', suma: '12,50', datum: '2026-07-12' })
+    expect(r.ok).toBe(true)
+    expect(r.data.suma).toBe(12.5)
+    expect(r.data.datum.getFullYear()).toBe(2026)
+    expect(r.data.predajca).toBe('Hornbach')
+  })
+  it('odmietne zápornú a nečíselnú sumu', () => {
+    expect(validujUpravu({ predajca: 'X', suma: '-1', datum: '' }).ok).toBe(false)
+    expect(validujUpravu({ predajca: 'X', suma: 'abc', datum: '' }).ok).toBe(false)
+  })
+  it('prázdny dátum je OK (null), predajca sa oreže', () => {
+    const r = validujUpravu({ predajca: '  Obchod  ', suma: '5', datum: '' })
+    expect(r.ok).toBe(true)
+    expect(r.data.datum).toBeNull()
+    expect(r.data.predajca).toBe('Obchod')
   })
 })

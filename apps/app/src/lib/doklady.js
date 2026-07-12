@@ -48,3 +48,19 @@ export function mapOcrReceipt(r) {
     })),
   }
 }
+
+// Validácia ručnej úpravy dokladu (formulár DokladDetail).
+export function validujUpravu({ predajca, suma, datum }) {
+  const cistySuma = parseFloat(String(suma ?? '').replace(',', '.'))
+  if (Number.isNaN(cistySuma) || cistySuma < 0) {
+    return { ok: false, chyba: 'Suma musí byť nezáporné číslo' }
+  }
+  const cistyDatum = datum ? new Date(datum) : null
+  if (cistyDatum && Number.isNaN(cistyDatum.getTime())) {
+    return { ok: false, chyba: 'Neplatný dátum' }
+  }
+  return {
+    ok: true,
+    data: { predajca: String(predajca || '').trim(), suma: cistySuma, datum: cistyDatum },
+  }
+}
