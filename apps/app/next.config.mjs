@@ -11,7 +11,7 @@ const nextConfig = {
   // ho sám nenájde, bez tohto include lambda padá pri importe (exit 128).
   outputFileTracingRoot: path.join(__dirname, '../../'),
   outputFileTracingIncludes: {
-    '/**': ['../../packages/db/**'],
+    '/**': ['../../packages/db/**', './generated/client/**'],
   },
 }
 
