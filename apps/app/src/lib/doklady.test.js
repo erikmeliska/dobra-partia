@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { mapEkasaReceipt, parseEkasaDatum } from './doklady'
+import { mapEkasaReceipt, mapOcrReceipt, parseEkasaDatum } from './doklady'
 import fixture from './fixtures/ekasa-sample.json'
 
 describe('parseEkasaDatum', () => {
@@ -42,5 +42,30 @@ describe('mapEkasaReceipt', () => {
   it('quantity 0 nepadne na delení nulou', () => {
     const r = { ...fixture.receipt, items: [{ name: 'X', quantity: 0, vatRate: 20, price: 5 }] }
     expect(mapEkasaReceipt(r).polozky[0].jednotkovaCena).toBe(5)
+  })
+})
+
+describe('mapOcrReceipt', () => {
+  it('mapuje BAML Receipt na doklad + položky', () => {
+    const { doklad, polozky } = mapOcrReceipt({
+      supplierName: 'Hornbach',
+      totalAmount: 55.5,
+      currency: 'EUR',
+      issueDate: '2026-04-04',
+      items: [{ name: 'Silikón', quantity: 2, unitPrice: 5, totalPrice: 10, vatRate: 23 }],
+    })
+    expect(doklad.predajca).toBe('Hornbach')
+    expect(doklad.suma).toBe(55.5)
+    expect(doklad.overenie).toBe('ocr')
+    expect(doklad.stav).toBe('spracovany')
+    expect(doklad.datum.getFullYear()).toBe(2026)
+    expect(polozky[0]).toEqual({
+      nazov: 'Silikón', mnozstvo: 2, suma: 10, jednotkovaCena: 5, kategoria: 'material',
+    })
+  })
+  it('prázdne items a chýbajúci dátum nepadnú', () => {
+    const { doklad, polozky } = mapOcrReceipt({ totalAmount: 3, currency: 'EUR' })
+    expect(polozky).toEqual([])
+    expect(doklad.datum).toBeNull()
   })
 })

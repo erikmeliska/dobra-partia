@@ -1,3 +1,4 @@
+import { del } from '@vercel/blob'
 import prisma from '@dobra-partia/db'
 import { fetchReceipt } from './ekasa'
 import { mapEkasaReceipt, mapOcrReceipt } from './doklady'
@@ -47,6 +48,7 @@ export async function spracujDoklad(dokladId) {
       where: { partiaId: doklad.partiaId, qrData: ocr.qrCode, id: { not: doklad.id } },
     })
     if (duplikat) {
+      if (doklad.fotoUrl) await del(doklad.fotoUrl).catch(() => {})
       await prisma.doklad.delete({ where: { id: doklad.id } })
       return { ...duplikat, duplicita: true }
     }
