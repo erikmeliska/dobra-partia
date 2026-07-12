@@ -1,5 +1,6 @@
 import './globals.css'
 import SwRegister from '@/components/SwRegister'
+import CaptureButton from '@/components/CaptureButton'
 
 export const metadata = {
   title: 'Dobrá Partia — Appka',
@@ -15,6 +16,7 @@ export default function RootLayout({ children }) {
     <html lang="sk">
       <body className="bg-sand text-navy min-h-screen">
         <SwRegister />
+        <CaptureButton />
         {children}
       </body>
     </html>
