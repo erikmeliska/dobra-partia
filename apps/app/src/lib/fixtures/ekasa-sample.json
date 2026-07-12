@@ -1,0 +1,41 @@
+{
+  "returnValue": 0,
+  "receipt": {
+    "receiptId": "O-AC6D5656CDC64336AD5656CDC60336E0",
+    "ico": "17147786",
+    "dic": "2020518962",
+    "icDph": "SK2020518962",
+    "issueDate": "07.10.2020 16:57:12",
+    "createDate": "07.10.2020 16:57:12",
+    "receiptNumber": 1570,
+    "type": "PD",
+    "taxBaseBasic": 11.47,
+    "taxBaseReduced": 2.21,
+    "totalPrice": 16.2,
+    "vatAmountBasic": 2.3,
+    "vatAmountReduced": 0.22,
+    "vatRateBasic": 20.0,
+    "vatRateReduced": 10.0,
+    "items": [
+      { "name": "REZY KAKAOVE EXT", "itemType": "K", "quantity": 3.0, "vatRate": 20.0, "price": 1.33 },
+      { "name": "ROZOK 50g BEZ E", "itemType": "K", "quantity": 4.0, "vatRate": 10.0, "price": 0.32 },
+      { "name": "JABLKA CERVE.II", "itemType": "K", "quantity": 0.895, "vatRate": 10.0, "price": 0.87 }
+    ],
+    "organization": {
+      "name": "MILK-AGRO, spol. s r.o.",
+      "ico": "17147786",
+      "dic": "2020518962",
+      "icDph": "SK2020518962",
+      "municipality": "Prešov",
+      "streetName": "Čapajevova",
+      "postalCode": "08046",
+      "country": "Slovensko",
+      "vatPayer": true
+    },
+    "unit": { "cashRegisterCode": "88820205189620059", "municipality": "Prešov", "unitType": "STANDARD" },
+    "vatSummary": [
+      { "vatBase": 2.21, "vatAmount": 0.22, "vat": { "vatRate": 10.0 } },
+      { "vatBase": 11.47, "vatAmount": 2.3, "vat": { "vatRate": 20.0 } }
+    ]
+  }
+}
