@@ -18,15 +18,15 @@ export default async function DopytyPage({ searchParams }) {
     <>
       <AppHeader title="Dopyty" />
       <main className="mx-auto max-w-xl space-y-3 p-4">
-        <nav className="flex gap-2">
-          <Link href="/dopyty" className={`rounded-full px-4 py-2 text-sm font-bold ${!stav ? 'bg-navy text-white' : 'bg-white'}`}>
+        <nav className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
+          <Link href="/dopyty" className={`shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-sm font-bold ${!stav ? 'bg-navy text-white' : 'bg-white'}`}>
             Všetky
           </Link>
           {STAVY_DOPYTU.map((s) => (
             <Link
               key={s}
               href={`/dopyty?stav=${s}`}
-              className={`rounded-full px-4 py-2 text-sm font-bold ${stav === s ? 'bg-navy text-white' : 'bg-white'}`}
+              className={`shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-sm font-bold ${stav === s ? 'bg-navy text-white' : 'bg-white'}`}
             >
               {STAV_LABEL[s]}
             </Link>

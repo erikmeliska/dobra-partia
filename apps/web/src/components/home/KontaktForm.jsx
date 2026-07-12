@@ -41,6 +41,12 @@ export default function KontaktForm() {
     setLatLon({ lat: item.lat, lon: item.lon })
     setResults([])
     const L = (await import('leaflet')).default
+    // bundler rozbíja autodetekciu ciest k ikonám markera — servujeme ich sami
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: '/assets/leaflet/marker-icon-2x.png',
+      iconUrl: '/assets/leaflet/marker-icon.png',
+      shadowUrl: '/assets/leaflet/marker-shadow.png',
+    })
     const lat = parseFloat(item.lat),
       lon = parseFloat(item.lon)
     if (!mapRef.current) {
