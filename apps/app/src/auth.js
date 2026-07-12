@@ -10,7 +10,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Credentials({
       credentials: { email: {}, password: {} },
       async authorize(creds) {
-        return verifyCredentials(prisma, creds?.email, creds?.password)
+        try {
+          return await verifyCredentials(prisma, creds?.email, creds?.password)
+        } catch (e) {
+          console.error('AUTH-DEBUG authorize zlyhal:', e?.message, e?.stack?.slice(0, 500))
+          throw e
+        }
       },
     }),
   ],
