@@ -18,8 +18,10 @@ dobra-partia/
 - **`apps/web`** — marketingový web (titulka, blog, referencie, galéria, kontaktný formulár).
   Zber dopytov (`Dopyt`) a publikačný výstup. Detaily: [`apps/web/README.md`](apps/web/README.md).
 - **`apps/app`** — operačná appka pre spoločníkov (PWA): login, inbox dopytov (stavy, filter,
-  volať/SMS/mapa), push notifikácie o nových dopytoch. Základ pre ďalšie fázy (pipeline zákaziek,
-  nákladový engine, fakturácia — pozri plán automatizácie).
+  volať/SMS/mapa), push notifikácie o nových dopytoch, **bločkový inbox `/doklady`** — capture
+  FAB → fotka bločku → QR → eKasa API → položky (offline fronta, Vercel Blob fotky, Gemini OCR
+  fallback pre bločky bez QR). Ďalšie fázy: pipeline zákaziek, AI priradenie bločkov, fakturácia
+  — pozri plán automatizácie.
 - **`packages/db`** — Prisma schéma (`Partia`, `Uzivatel`, `PushSubscription`, `Zakaznik`,
   `Zakazka`, `Doklad`, `NakladovaPolozka`, `Media`, `Referencia`, `Dopyt`, `BlogPost`,
   `BlogCategory`, `MediaUpload`) a generovaný klient. Obe appky nad ňou pristupujú k tej istej
@@ -63,6 +65,8 @@ Každý workspace má vlastný `.env`: `apps/web/.env`, `apps/app/.env`, `packag
 | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | | ✓ | | verejný VAPID kľúč pre web push (client-side) |
 | `VAPID_PRIVATE_KEY` | | ✓ | | privátny VAPID kľúč pre web push (server-side) |
 | `VAPID_SUBJECT` | | ✓ | | `mailto:` kontakt požadovaný web push štandardom |
+| `GOOGLE_API_KEY` | | ✓ | | Gemini (BAML) — OCR fallback pre bločky bez QR |
+| `BLOB_STORE_ID` | | ✓ | | Vercel Blob store (`dobra-partia-app-blob`) — fotky bločkov; na Verceli auth cez OIDC, lokálne treba `BLOB_READ_WRITE_TOKEN` z dashboardu store |
 
 `packages/db/.env` slúži pre skripty spúšťané priamo v `packages/db` (seed, import), preto obsahuje
 len `DATABASE_URL` a WP/Discord premenné zdieľané so seed dátami — samostatný `.env` tam v
@@ -70,15 +74,14 @@ princípe potrebuje iba `DATABASE_URL`.
 
 ## Stav nasadenia
 
-- **`apps/web`** beží v produkcii na `www.dobrapartia.sk` — zatiaľ zo starej (pred-monorepo)
-  štruktúry repozitára na Verceli; prepnutie root directory existujúceho Vercel projektu na
-  `apps/web` čaká na deploy checklist.
-- **`apps/app`** je hotová lokálne (login, inbox dopytov, PWA skelet, push notifikácie), ale
-  **ešte nie je nasadená**. Nasadenie (nový Vercel projekt, env premenné, DNS `app.dobrapartia.sk`,
-  merge do `main`) je Task 10 plánu — rieši sa spolu s používateľom, nie automaticky.
+- **`apps/web`** beží v produkcii na `www.dobrapartia.sk` (Vercel projekt `web`, root directory `apps/web`).
+- **`apps/app`** beží v produkcii na `app.dobrapartia.sk` (Vercel projekt `dobra-partia-app`, root
+  directory `apps/app`; nasadené 12. 7. 2026 vrátane bločkového inboxu). Push na `main` spúšťa
+  produkčný deploy oboch projektov.
 
 ## Ďalšie dokumenty
 
-- Architektúra a rozhodnutia: [`docs/superpowers/specs/2026-07-11-monorepo-app-pwa-design.md`](docs/superpowers/specs/2026-07-11-monorepo-app-pwa-design.md)
-- Implementačný plán a deploy checklist: [`docs/superpowers/plans/2026-07-11-monorepo-prestavba.md`](docs/superpowers/plans/2026-07-11-monorepo-prestavba.md)
+- Architektúra monorepa: [`docs/superpowers/specs/2026-07-11-monorepo-app-pwa-design.md`](docs/superpowers/specs/2026-07-11-monorepo-app-pwa-design.md)
+- Bločkový inbox (capture + eKasa): [`docs/superpowers/specs/2026-07-12-capture-blocky-design.md`](docs/superpowers/specs/2026-07-12-capture-blocky-design.md)
+- Implementačné plány: [`docs/superpowers/plans/`](docs/superpowers/plans/)
 - Detaily webu: [`apps/web/README.md`](apps/web/README.md)
