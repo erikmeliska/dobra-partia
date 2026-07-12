@@ -27,3 +27,24 @@ export function mapEkasaReceipt(receipt) {
     })),
   }
 }
+
+// BAML Receipt → Doklad + polozky. items[] má unitPrice aj totalPrice priamo.
+export function mapOcrReceipt(r) {
+  return {
+    doklad: {
+      predajca: r.supplierName || '',
+      suma: r.totalAmount ?? null,
+      datum: r.issueDate ? new Date(r.issueDate) : null,
+      ekasaRaw: null,
+      overenie: 'ocr',
+      stav: 'spracovany',
+    },
+    polozky: (r.items || []).map((i) => ({
+      nazov: i.name,
+      mnozstvo: i.quantity ?? 1,
+      suma: i.totalPrice ?? 0,
+      jednotkovaCena: i.unitPrice ?? (i.totalPrice ?? 0) / (i.quantity || 1),
+      kategoria: 'material',
+    })),
+  }
+}
