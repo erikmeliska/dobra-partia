@@ -1,10 +1,26 @@
+import Link from 'next/link'
 import { signOut } from '@/auth'
 import PushNastavenie from './PushNastavenie'
 
-export default function AppHeader({ title }) {
+const SEKCIE = [
+  { key: 'dopyty', href: '/dopyty', label: 'Dopyty' },
+  { key: 'doklady', href: '/doklady', label: 'Doklady' },
+]
+
+export default function AppHeader({ aktivna }) {
   return (
     <header className="sticky top-0 z-10 flex items-center justify-between bg-navy px-4 py-3 text-white">
-      <h1 className="text-lg font-bold">{title}</h1>
+      <nav className="flex gap-1">
+        {SEKCIE.map((s) => (
+          <Link
+            key={s.key}
+            href={s.href}
+            className={`rounded-lg px-3 py-2 text-sm font-bold ${aktivna === s.key ? 'bg-white/20' : 'text-white/70'}`}
+          >
+            {s.label}
+          </Link>
+        ))}
+      </nav>
       <div className="flex items-center gap-2">
         <PushNastavenie />
         <form

@@ -16,7 +16,7 @@ export default async function DopytyPage({ searchParams }) {
   })
   return (
     <>
-      <AppHeader title="Dopyty" />
+      <AppHeader aktivna="dopyty" />
       <main className="mx-auto max-w-xl space-y-3 p-4">
         <nav className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
           <Link href="/dopyty" className={`shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-sm font-bold ${!stav ? 'bg-navy text-white' : 'bg-white'}`}>
