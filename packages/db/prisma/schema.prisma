@@ -140,7 +140,8 @@ model Doklad {
   zakazkaId String?
   zakazka   Zakazka?  @relation(fields: [zakazkaId], references: [id])
   typ       String    @default("blocek") // blocek | faktura | ine
-  stav      String    @default("inbox")  // inbox | spracovany | priradeny
+  stav      String    @default("inbox")  // inbox | spracovany | rucne | priradeny
+  overenie  String    @default("nic")    // ekasa | ocr | nic
   fotoUrl   String    @default("")
   qrData    String    @default("")
   ekasaRaw  Json?
@@ -149,6 +150,9 @@ model Doklad {
   datum     DateTime?
   createdAt DateTime  @default(now())
   polozky   NakladovaPolozka[]
+
+  @@index([partiaId, stav])
+  @@index([partiaId, qrData])
 }
 
 model NakladovaPolozka {
